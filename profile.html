@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile | Lost & Found Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 90%;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #4CAF50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .logo a {
+            text-decoration: none;
+            color: #4CAF50;
+        }   
+
+        .logo i {
+            font-size: 1.2em;
+            color:#007BFF;
+        }
+
+        nav {
+            flex: 1;
+            max-width: 300px;
+            margin: 0 20px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            justify-content: space-between;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: black;
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        nav ul li a:hover {
+            background-color: #e9ecef;;
+            color: #007BFF;        
+        }
+
+        nav ul li a i {
+            margin-right: 8px;
+        }
+
+        .account-section {
+            position: relative;
+        }
+        
+        .account-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .account-icon:hover {
+            background-color: #3d8b40;
+        }
+        
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 280px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-top: 10px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-user-info {
+            display: flex;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+        
+        .user-details h3 {
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+        
+        .user-details p {
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+         .dropdown-menu {
+            list-style: none;
+            padding: 10px 0;
+            margin: 0;
+        }
+        .dropdown-menu li {
+            margin: 0;
+        }
+        .dropdown-menu li a {
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        .dropdown-menu li a:hover {
+            background-color: #f4f7f6;
+        }
+        .logout-btn {
+            color: #e74c3c !important;
+        }
+
+        .hamburger-menu {
+            display: none; 
+            font-size: 1.8em;
+            color: var(--text-color);
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .hamburger-menu:hover {
+            background-color: var(--bg-color-dark);
+        }
+
+        /* Main Content Styles */
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #444;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            background-color: #3d8b40;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .profile-avatar {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-right: 30px;
+            overflow: hidden;
+            background-color: #e0e0e0;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info h1 {
+            margin-bottom: 5px;
+        }
+
+        .profile-info p {
+            color: #777;
+            margin-bottom: 0;
+        }
+
+        .avatar-upload {
+            margin-top: 10px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            display: inline-block;
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s;
+        }
+
+        .file-label:hover {
+            background-color: #e0e0e0;
+        }
+
+        .help-text {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .detail-card {
+            background-color: #f9fafc;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .detail-card h3 {
+            margin-bottom: 10px;
+            color: #4CAF50;
+        }
+
+        .detail-card p {
+            margin-bottom: 8px;
+        }
+
+        .detail-card strong {
+            color: #555;
+            display: inline-block;
+            width: 160px;
+        }
+
+        .activity-section {
+            margin-top: 30px;
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .activity-list li:last-child {
+            border-bottom: none;
+        }
+
+        .activity-date {
+            color: #777;
+            font-size: 0.9em;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-wrap: wrap;
+            }
+            
+            nav {
+                order: 3;
+                max-width: 100%;
+                margin: 15px 0 0 0;
+                display: none;
+            }
+            
+            nav.active {
+                display: block;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            nav ul li {
+                margin-bottom: 5px;
+            }
+            
+            nav ul li a {
+                justify-content: center;
+            }
+            
+            .hamburger-menu {
+                display: block;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-avatar {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .profile-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-container {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-search-location" style="color: #007BFF;"></i>
+                <a href="index.html"><span>Lost & Found Hub</span></a>
+            </div>
+            <nav id="mainNav">
+                <ul>
+                    <li><a href="index.html" aria-label="Home"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="submit-item.html" id="navSubmitItem" aria-label="Submit Item"><i class="fas fa-plus-circle"></i> Submit Item</a></li>
+                </ul>
+            </nav>
+            <div class="account-section" id="accountSection">
+                <div class="account-icon" id="accountIcon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="dropdown" id="accountDropdown">
+                    <div class="dropdown-user-info">
+                        <div class="user-avatar"><i class="fas fa-user"></i></div>
+                        <div class="user-details">
+                            <h3 id="username">nivesharm</h3>
+                            <p id="useremail">nivesharm@example.com</p>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu">
+                        <li><a href="profile.html"><i class="fas fa-user-circle"></i> Your Profile</a></li>
+                        <!-- <li><a href="submit-item.html" id="navSubmitItem" aria-label="Submit Item"><i class="fas fa-plus-circle"></i> Submit Item</a></li> -->
+                        <li><a href="help.html"><i class="fas fa-question-circle"></i> Help & Support</a></li>
+                        <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
+                        <li><a href="contact.html" aria-label="Home"><i class="fas fa-phone contact-icons"></i> Contact</a></li>
+                        <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                        <li><a href="login.html" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="hamburger-menu" id="hamburgerMenu" role="button"><i class="fas fa-bars"></i></div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <img src="https://i.pravatar.cc/150?img=12" alt="User Avatar" id="avatar-image">
+                </div>
+                <div class="profile-info">
+                    <h1 id="profileUsername">nivesharm</h1>
+                    <p id="profileEmail">nivesharm@example.com</p>
+                    <p>Member since: <span id="memberSince">January 2023</span></p>
+                    
+                    <div class="avatar-upload">
+                        <input type="file" id="avatar-upload" class="file-input" accept="image/*">
+                        <label for="avatar-upload" class="file-label">Change Avatar</label>
+                        <p class="help-text">JPG, PNG or GIF, max 2MB</p>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Account Details</h2>
+            <div class="btn-container" style="margin-top: 30px;">
+                <button class="btn" id="editProfileBtn"><i class="fas fa-edit"></i> Edit Profile</button>
+                <button class="btn btn-secondary" id="changePasswordBtn"><i class="fas fa-lock"></i> Change Password</button>
+            </div>
+            <div class="profile-details">
+                <div class="detail-card">
+                    <h3>Personal Information</h3>
+                    <p><strong>Full Name:</strong> <span id="profileFullName">Nive Sharm</span></p>
+                    <p><strong>Username:</strong> <span id="profileUsernameDetail">nivesharm</span></p>
+                    <p><strong>Email:</strong> <span id="profileEmailDetail">nivesharm@example.com</span></p>
+                    <p><strong>Phone:</strong> <span id="profilePhone">+1 (555) 123-4567</span></p>
+                    <p><strong>Location:</strong> <span id="profileLocation">New York, USA</span></p>
+                </div>
+
+                <div class="detail-card">
+                    <h3>Security</h3>
+                    <p><strong>Password Last Changed:</strong> 3 months ago</p>
+                    <p><strong>Security Questions:</strong> Set</p>
+                    <p><strong>Account Recovery:</strong> Enabled</p>
+                    <p><strong>Privacy Level:</strong> Standard</p>
+                </div>
+            </div>
+            <div class="activity-section">
+                <h2>Recent Activity</h2>
+                <ul class="activity-list">
+                    <li>
+                        <span>Logged in to your account</span>
+                        <span class="activity-date">Today, 10:30 AM</span>
+                    </li>
+                    <li>
+                        <span>Updated profile picture</span>
+                        <span class="activity-date">2 days ago</span>
+                    </li>
+                    <li>
+                        <span>Changed password</span>
+                        <span class="activity-date">1 week ago</span>
+                    </li>
+                    <li>
+                        <span>Completed profile verification</span>
+                        <span class="activity-date">2 weeks ago</span>
+                    </li>
+                    <li>
+                        <span>Connected mobile device</span>
+                        <span class="activity-date">1 month ago</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="btn-container" style="margin-top: 30px;">
+                <button class="btn" id="deleteAccountBtn" style="background-color: #e74c3c;"><i class="fas fa-trash-alt"></i> Delete Account</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // This function would typically fetch user data from your backend/database
+        function loadUserProfile() {
+            // Simulated user data - in a real app, this would come from your database
+            const userData = {
+                username: "nivesharm",
+                email: "nivesharm@example.com",
+                fullName: "Nive Sharm",
+                phone: "+1 (555) 123-4567",
+                location: "New York, USA",
+                memberSince: "January 2023",
+                lastLogin: "Today, 10:30 AM",
+                loginCount: 142,
+                status: "Active",
+                emailVerified: true,
+                twoFactorEnabled: false,
+                theme: "Light",
+                language: "English",
+                timezone: "EST (UTC-5)",
+                notifications: "Enabled",
+                emailUpdates: "Weekly",
+                passwordLastChanged: "3 months ago",
+                securityQuestions: "Set",
+                connectedDevices: 2,
+                accountRecovery: "Enabled",
+                privacyLevel: "Standard"
+            };
+
+            // Populate the profile with user data
+            document.getElementById('profileUsername').textContent = userData.username;
+            document.getElementById('profileEmail').textContent = userData.email;
+            document.getElementById('profileFullName').textContent = userData.fullName;
+            document.getElementById('profileUsernameDetail').textContent = userData.username;
+            document.getElementById('profileEmailDetail').textContent = userData.email;
+            document.getElementById('profilePhone').textContent = userData.phone;
+            document.getElementById('profileLocation').textContent = userData.location;
+            document.getElementById('memberSince').textContent = userData.memberSince;
+            document.getElementById('lastLogin').textContent = userData.lastLogin;
+            document.getElementById('loginCount').textContent = userData.loginCount;
+        }
+
+        // Load profile when page loads
+        window.addEventListener('DOMContentLoaded', loadUserProfile);
+
+        // Example of how to update profile information
+        function updateProfile() {
+            // In a real application, this would send data to your backend
+            const newFullName = prompt("Enter new full name:", document.getElementById('profileFullName').textContent);
+            if (newFullName) {
+                document.getElementById('profileFullName').textContent = newFullName;
+                alert("Profile updated successfully!");
+            }
+        }
+
+        // Avatar upload functionality
+        document.getElementById('avatar-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Check file size (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert("File size exceeds 2MB limit. Please choose a smaller file.");
+                    return;
+                }
+                
+                // Check file type
+                if (!file.type.match('image.*')) {
+                    alert("Please select an image file (JPG, PNG, or GIF).");
+                    return;
+                }
+                
+                // Create a preview of the image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('avatar-image').src = e.target.result;
+                    alert("Avatar updated successfully!");
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Change password function (example)
+        function changePassword() {
+            alert("Password change functionality would go here");
+        }
+
+        // Delete account function (example)
+        function deleteAccount() {
+            const confirmDelete = confirm("Are you sure you want to delete your account? This action cannot be undone.");
+            if (confirmDelete) {
+                alert("Account deletion functionality would go here");
+                // In a real app, this would redirect to a confirmation page or send a request to the server
+            }
+        }
+
+        // Header functionality
+        const accountIcon = document.getElementById('accountIcon');
+        const accountDropdown = document.getElementById('accountDropdown');
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        const mainNav = document.getElementById('mainNav');
+        
+        if(accountIcon) {
+            accountIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                accountDropdown.classList.toggle('active');
+            });
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+            if(accountDropdown.classList.contains('active')) {
+                accountDropdown.classList.remove('active');
+            }
+        });
+        
+        // Prevent dropdown from closing when clicking inside it
+        accountDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+        
+        // Hamburger menu functionality
+        if(hamburgerMenu) {
+            hamburgerMenu.addEventListener('click', () => {
+                mainNav.classList.toggle('active');
+            });
+        }
+
+        // Attach event listeners to buttons
+        document.getElementById('editProfileBtn').addEventListener('click', updateProfile);
+        document.getElementById('changePasswordBtn').addEventListener('click', changePassword);
+        document.getElementById('deleteAccountBtn').addEventListener('click', deleteAccount);
+    </script>
+</body>
+</html>

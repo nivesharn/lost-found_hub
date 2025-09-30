@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Lost & Found Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* General Styling */
+        :root {
+            --primary-color: #4CAF50; /* Theme Green */
+            --secondary-color: #007BFF; /* A complementary blue */
+            --text-color: #333;
+            --light-text-color: #666;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 90%;
+        }
+
+       .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #4CAF50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .logo a {
+            text-decoration: none;
+            color: #4CAF50;
+        }   
+
+        .logo i {
+            font-size: 1.2em;
+            color:#007BFF;
+        }
+
+        nav {
+            flex: 1;
+            max-width: 300px;
+            margin: 0 20px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            justify-content: space-between;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: black;
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        nav ul li a:hover {
+            background-color: #e9ecef;;
+            color: #007BFF;        
+        }
+
+        nav ul li a i {
+            margin-right: 8px;
+        }
+
+        .account-section {
+            position: relative;
+        }
+        
+        .account-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .account-icon:hover {
+            background-color: #3d8b40;
+        }
+        
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 280px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-top: 10px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-user-info {
+            display: flex;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+        
+        .user-details h3 {
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+        
+        .user-details p {
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .dropdown-menu {
+            list-style: none;
+            padding: 10px 0;
+            margin: 0;
+        }
+        .dropdown-menu li {
+            margin: 0;
+        }
+        .dropdown-menu li a {
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        .dropdown-menu li a:hover {
+            background-color: #f4f7f6;
+        }
+        .logout-btn {
+            color: #e74c3c !important;
+        }
+
+        .hamburger-menu {
+            display: none; 
+            font-size: 1.8em;
+            color: var(--text-color);
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .hamburger-menu:hover {
+            background-color: var(--bg-color-dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            color: var(--text-color);
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--primary-color);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        p {
+            color: var(--light-text-color);
+            margin-bottom: 15px;
+        }
+
+        /* Header & Footer (Shared) */
+        header {
+            background-color: var(--card-bg);
+            padding: 15px 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header nav a {
+            text-decoration: none;
+            color: var(--text-color);
+            margin-left: 20px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        header nav a:hover {
+            color: var(--primary-color);
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+
+        footer p{
+            color: white
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        /* Card Styling */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        /* Button Styling */
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+        
+        /* Contact Page Specific Styles */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 30px;
+            align-items: flex-start;
+        }
+        .contact-info-list {
+            list-style: none;
+            padding: 0;
+        }
+        .contact-info-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+        .contact-info-list i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-right: 20px;
+            width: 30px;
+            text-align: center;
+            padding-top: 5px;
+        }
+        .contact-info-list strong {
+            display: block;
+            color: var(--text-color);
+        }
+        .social-links {
+            margin-top: 30px;
+        }
+        .social-links a {
+            color: var(--text-color);
+            font-size: 1.8rem;
+            margin-right: 20px;
+            transition: color 0.3s;
+        }
+        .social-links a:hover {
+            color: var(--primary-color);
+        }
+        .map-container {
+            border-radius: 10px;
+            overflow: hidden;
+            height: 400px;
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .header-content { flex-direction: column; gap: 10px; }
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .hamburger-menu {
+                display: block;
+            }
+            nav {
+                display: none;
+            }
+            nav.active {
+                display: block;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: white;
+                padding: 20px;
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-search-location" style="color: #007BFF;"></i>
+                        <span>Lost & Found Hub</span>
+                </a>
+            </div>
+            <nav id="mainNav">
+                <ul>
+                <li><a href="index.html" aria-label="Home"><i class="fas fa-home"></i> Home</a></li>
+                </ul>
+            </nav>
+            <div class="account-section" id="accountSection">
+                <div class="account-icon" id="accountIcon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="dropdown" id="accountDropdown">
+                    <div class="dropdown-user-info">
+                        <div class="user-avatar"><i class="fas fa-user"></i></div>
+                        <div class="user-details">
+                            <h3 id="username">nivesharm</h3>
+                            <p id="useremail">nivesharm@example.com</p>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu">
+                        <li><a href="profile.html"><i class="fas fa-user-circle"></i> Your Profile</a></li>
+                        <li><a href="submit-item.html" id="navSubmitItem" aria-label="Submit Item"><i class="fas fa-plus-circle"></i> Submit Item</a></li>
+                        <li><a href="help.html"><i class="fas fa-question-circle"></i> Help & Support</a></li>
+                        <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
+                        <!-- <li><a href="contact.html" aria-label="Home"><i class="fas fa-phone contact-icons"></i> Contact</a></li> -->
+                        <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                        <li><a href="login.html" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+            <button class="hamburger-menu" id="hamburgerMenu" aria-label="Toggle navigation menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1>Contact Us</h1>
+        <div class="contact-grid">
+            <div class="contact-details card">
+                <h2>Get in Touch 🤝</h2>
+                <p>Have questions? We're here to help. Reach out to us through any of the channels below.</p>
+                <ul class="contact-info-list">
+                    <li>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div><strong>Address:</strong><br>123 College Avenue, Campus Central, ST 12345</div>
+                    </li>
+                    <li>
+                        <i class="fas fa-phone-alt"></i>
+                        <div><strong>Phone:</strong><br>(123) 456-7890</div>
+                    </li>
+                    <li>
+                        <i class="fas fa-envelope"></i>
+                        <div><strong>Official Email:</strong><br>support@lostfoundhub.edu</div>
+                    </li>
+                    <li>
+                        <i class="fas fa-clock"></i>
+                        <div><strong>Business Hours:</strong><br>Mon - Fri: 9:00 AM - 5:00 PM</div>
+                    </li>
+                </ul>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <div class="contact-form-map">
+                <div class="card">
+                    <h2>Send Us a Message 📝</h2>
+                    <form action="#" method="post">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Your Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn">Send Message</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h2>Our Location 📍</h2>
+                    <div class="map-container">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.0864388832633!2d144.9537353159042!3d-37.81701994202154!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad65d4c2b349649%3A0xb6899234e561db11!2sFederation%20Square!5e0!3m2!1sen!2sau!4v1617862 Federation Square" 
+                            width="100%" 
+                            height="100%" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2025 Lost & Found Hub. All Rights Reserved.</p>
+            <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+        </div>
+    </footer>
+
+    <script>
+        // Toggle account dropdown
+        document.getElementById('accountIcon').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('accountDropdown').classList.toggle('active');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const accountSection = document.getElementById('accountSection');
+            if (!accountSection.contains(event.target)) {
+                document.getElementById('accountDropdown').classList.remove('active');
+            }
+        });
+
+        // Mobile menu toggle
+        document.getElementById('hamburgerMenu').addEventListener('click', function() {
+            document.getElementById('mainNav').classList.toggle('active');
+        });
+
+        // Form submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for your message! We will get back to you soon.');
+            this.reset();
+        });
+    </script>
+</body>
+</html>
