@@ -472,7 +472,7 @@
                         </div>
                     </div>
                     <ul class="dropdown-menu">
-                        <li><a href="profile.html"><i class="fas fa-user-circle"></i> Your Profile</a></li>
+                        <!-- <li><a href="profile.html"><i class="fas fa-user-circle"></i> Your Profile</a></li> -->
                         <!-- <li><a href="submit-item.html" id="navSubmitItem" aria-label="Submit Item"><i class="fas fa-plus-circle"></i> Submit Item</a></li> -->
                         <li><a href="help.html"><i class="fas fa-question-circle"></i> Help & Support</a></li>
                         <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
@@ -560,136 +560,124 @@
         </div>
     </div>
 
+    
     <script>
-        // This function would typically fetch user data from your backend/database
-        function loadUserProfile() {
-            // Simulated user data - in a real app, this would come from your database
-            const userData = {
-                username: "nivesharm",
-                email: "nivesharm@example.com",
-                fullName: "Nive Sharm",
-                phone: "+1 (555) 123-4567",
-                location: "New York, USA",
-                memberSince: "January 2023",
-                lastLogin: "Today, 10:30 AM",
-                loginCount: 142,
-                status: "Active",
-                emailVerified: true,
-                twoFactorEnabled: false,
-                theme: "Light",
-                language: "English",
-                timezone: "EST (UTC-5)",
-                notifications: "Enabled",
-                emailUpdates: "Weekly",
-                passwordLastChanged: "3 months ago",
-                securityQuestions: "Set",
-                connectedDevices: 2,
-                accountRecovery: "Enabled",
-                privacyLevel: "Standard"
-            };
+async function loadUserProfile() {
+    const token = localStorage.getItem("authToken");
 
-            // Populate the profile with user data
-            document.getElementById('profileUsername').textContent = userData.username;
-            document.getElementById('profileEmail').textContent = userData.email;
-            document.getElementById('profileFullName').textContent = userData.fullName;
-            document.getElementById('profileUsernameDetail').textContent = userData.username;
-            document.getElementById('profileEmailDetail').textContent = userData.email;
-            document.getElementById('profilePhone').textContent = userData.phone;
-            document.getElementById('profileLocation').textContent = userData.location;
-            document.getElementById('memberSince').textContent = userData.memberSince;
-            document.getElementById('lastLogin').textContent = userData.lastLogin;
-            document.getElementById('loginCount').textContent = userData.loginCount;
-        }
+    if (!token) {
+        document.getElementById("profileUsername").textContent = "Guest";
+        document.getElementById("profileEmail").textContent = "Not logged in";
+        return;
+    }
 
-        // Load profile when page loads
-        window.addEventListener('DOMContentLoaded', loadUserProfile);
-
-        // Example of how to update profile information
-        function updateProfile() {
-            // In a real application, this would send data to your backend
-            const newFullName = prompt("Enter new full name:", document.getElementById('profileFullName').textContent);
-            if (newFullName) {
-                document.getElementById('profileFullName').textContent = newFullName;
-                alert("Profile updated successfully!");
-            }
-        }
-
-        // Avatar upload functionality
-        document.getElementById('avatar-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                // Check file size (max 2MB)
-                if (file.size > 2 * 1024 * 1024) {
-                    alert("File size exceeds 2MB limit. Please choose a smaller file.");
-                    return;
-                }
-                
-                // Check file type
-                if (!file.type.match('image.*')) {
-                    alert("Please select an image file (JPG, PNG, or GIF).");
-                    return;
-                }
-                
-                // Create a preview of the image
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('avatar-image').src = e.target.result;
-                    alert("Avatar updated successfully!");
-                };
-                reader.readAsDataURL(file);
+    try {
+        const response = await fetch("http://localhost:3000/api/profile", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             }
         });
 
-        // Change password function (example)
-        function changePassword() {
-            alert("Password change functionality would go here");
-        }
+        const result = await response.json();
 
-        // Delete account function (example)
-        function deleteAccount() {
-            const confirmDelete = confirm("Are you sure you want to delete your account? This action cannot be undone.");
-            if (confirmDelete) {
-                alert("Account deletion functionality would go here");
-                // In a real app, this would redirect to a confirmation page or send a request to the server
-            }
-        }
+        if (result.success) {
+            // ✅ Fill your profile section with real DB data
+            const user = result.user;
 
-        // Header functionality
-        const accountIcon = document.getElementById('accountIcon');
-        const accountDropdown = document.getElementById('accountDropdown');
-        const hamburgerMenu = document.getElementById('hamburgerMenu');
-        const mainNav = document.getElementById('mainNav');
-        
-        if(accountIcon) {
-            accountIcon.addEventListener('click', (e) => {
-                e.stopPropagation();
-                accountDropdown.classList.toggle('active');
-            });
+            document.getElementById('profileUsername').textContent = user.username || user.name || "No Name";
+            document.getElementById('profileEmail').textContent = user.email;
+            document.getElementById('profileFullName').textContent = user.fullName || "—";
+            document.getElementById('profileUsernameDetail').textContent = user.username;
+            document.getElementById('profileEmailDetail').textContent = user.email;
+            document.getElementById('profilePhone').textContent = user.phone || "—";
+            document.getElementById('profileLocation').textContent = user.location || "—";
+            document.getElementById('memberSince').textContent = user.created_at || "—";
+            // ✅ Account dropdown section
+    document.getElementById('username').textContent = user.username || user.name || "No Name";
+    document.getElementById('useremail').textContent = user.email;
+        } else {
+            document.getElementById("profileUsername").textContent = "Error";
+            document.getElementById("profileEmail").textContent = result.message;
         }
-        
-        // Close dropdown when clicking outside
-        document.addEventListener('click', () => {
-            if(accountDropdown.classList.contains('active')) {
-                accountDropdown.classList.remove('active');
-            }
-        });
-        
-        // Prevent dropdown from closing when clicking inside it
-        accountDropdown.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
-        
-        // Hamburger menu functionality
-        if(hamburgerMenu) {
-            hamburgerMenu.addEventListener('click', () => {
-                mainNav.classList.toggle('active');
-            });
-        }
+    } catch (err) {
+        console.error("Profile fetch failed:", err);
+        document.getElementById("profileUsername").textContent = "Error";
+        document.getElementById("profileEmail").textContent = "Could not load profile";
+    }
+}
 
-        // Attach event listeners to buttons
-        document.getElementById('editProfileBtn').addEventListener('click', updateProfile);
-        document.getElementById('changePasswordBtn').addEventListener('click', changePassword);
-        document.getElementById('deleteAccountBtn').addEventListener('click', deleteAccount);
-    </script>
+// ✅ Run only once on DOM ready
+window.addEventListener('DOMContentLoaded', () => {
+    loadUserProfile();
+
+    // Attach event listeners to buttons
+    document.getElementById('editProfileBtn').addEventListener('click', updateProfile);
+    document.getElementById('changePasswordBtn').addEventListener('click', changePassword);
+    document.getElementById('deleteAccountBtn').addEventListener('click', deleteAccount);
+});
+
+// Example: Update profile function
+function updateProfile() {
+    const newFullName = prompt("Enter new full name:", document.getElementById('profileFullName').textContent);
+    if (newFullName) {
+        document.getElementById('profileFullName').textContent = newFullName;
+        alert("Profile updated successfully!");
+    }
+}
+
+// Change password function (example)
+function changePassword() {
+    alert("Password change functionality would go here");
+}
+
+// Delete account function (example)
+function deleteAccount() {
+    const confirmDelete = confirm("Are you sure you want to delete your account? This action cannot be undone.");
+    if (confirmDelete) {
+        alert("Account deletion functionality would go here");
+    }
+}
+
+// Avatar upload functionality
+document.getElementById('avatar-upload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        if (file.size > 2 * 1024 * 1024) {
+            alert("File size exceeds 2MB limit. Please choose a smaller file.");
+            return;
+        }
+        if (!file.type.match('image.*')) {
+            alert("Please select an image file (JPG, PNG, or GIF).");
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('avatar-image').src = e.target.result;
+            alert("Avatar updated successfully!");
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Toggle dropdown menu
+accountIcon.addEventListener('click', function(e) {
+    e.stopPropagation();
+    accountDropdown.classList.toggle('active');
+});
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    if (!accountSection.contains(e.target)) {
+        accountDropdown.classList.remove('active');
+    }
+});
+</script>
+
+
+
+
+
 </body>
 </html>

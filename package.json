@@ -16,13 +16,14 @@
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.1",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-rate-limit": "^8.0.1",
-    "google-auth-library": "^10.2.0",
+    "express-session": "^1.18.2",
+    "google-auth-library": "^10.3.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.15.0",
+    "mysql2": "^3.15.1",
     "nodemailer": "^7.0.6"
   },
   "repository": {
@@ -32,5 +33,8 @@
   "bugs": {
     "url": "https://github.com/nivesharn/lost-found_hub/issues"
   },
-  "homepage": "https://github.com/nivesharn/lost-found_hub#readme"
+  "homepage": "https://github.com/nivesharn/lost-found_hub#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
 }
