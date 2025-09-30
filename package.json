@@ -24,5 +24,13 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.15.0",
     "nodemailer": "^7.0.6"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nivesharn/lost-found_hub.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nivesharn/lost-found_hub/issues"
+  },
+  "homepage": "https://github.com/nivesharn/lost-found_hub#readme"
 }
