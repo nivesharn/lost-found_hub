@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submit an Item | Lost & Found Portal</title>
-    <link rel="stylesheet" href="forms.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="forms.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         /* --- Modern Success Modal Styles --- */
         .success-modal-backdrop {
@@ -80,6 +81,28 @@
             background-color: #0056b3;
         }
 
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #007BFF;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         /* Footer */
         footer {
             background-color: var(--text-color);
@@ -148,7 +171,7 @@
 
         .modal-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
             border-bottom: 1px solid #eee;
@@ -187,6 +210,42 @@
 
         body.modal-open {
             overflow: hidden;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-wrap: wrap;
+            }
+
+            nav {
+                order: 3;
+                width: 100%;
+                margin-top: 15px;
+                display: none;
+            }
+
+            nav.active {
+                display: block;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .hamburger-menu {
+                display: block;
+            }
+
+            .form-section {
+                padding: 20px;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
@@ -233,12 +292,12 @@
             <h1>Report a Lost or Found Item</h1>
             <form id="itemForm" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label for="itemType">Are you reporting a:
+                    <label for="itemType">Are you reporting a:</label>
                     <div class="radio-group">
                         <input type="radio" id="itemTypeLost" name="itemType" value="Lost" required>
-                        <label class="lost-red" for="itemTypeLost"><i class="fas fa-times-circle"></i> Lost Item</label><span class="required"></span></label>
+                        <label class="lost-red" for="itemTypeLost"><i class="fas fa-times-circle"></i> Lost Item</label>
                         <input type="radio" id="itemTypeFound" name="itemType" value="Found">
-                        <label for="itemTypeFound"><i class="fas fa-check-circle"></i> Found Item</label><span class="required"></span></label>
+                        <label for="itemTypeFound"><i class="fas fa-check-circle"></i> Found Item</label>
                     </div>
                     <span class="error-message" id="itemType-error">Please select an item type.</span>
                 </div>
@@ -293,9 +352,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="contactphone">Your Contact Email <span class="required">*</span></label>
-                    <input type="tel" id="contactphone" name="contactphone" required placeholder="Enter your number"  maxlength="10">
-                    <span class="error-message" id="contactphone-error">A valid email is required.</span>
+                    <label for="contactphone">Your Contact Phone <span class="required">*</span></label>
+                    <input type="tel" id="contactphone" name="contactphone" required placeholder="Enter your number" maxlength="10">
+                    <span class="error-message" id="contactphone-error">A valid phone number is required.</span>
                 </div>
 
                 <div class="form-group">
@@ -303,6 +362,11 @@
                     <input type="file" id="itemImage" name="itemImage" accept="image/*">
                     <span class="error-message" id="itemImage-error"></span>
                     <p class="help-text">Max file size: 2MB. Supported formats: JPG, PNG, GIF.</p>
+                </div>
+
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner"></div>
+                    <p>Submitting your report and notifying admin...</p>
                 </div>
 
                 <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit Report</button>
@@ -330,86 +394,86 @@
           <button class="close-btn">&times;</button>
         </div>
         <div class="modal-body">
-                <h4>1. Information We Collect</h4>
-                <p>To provide our lost and found matching services, we collect:
-                    <ul>
-                        <li>Account information (name, email, contact details)</li>
-                        <li>Item descriptions and photos you choose to share</li>
-                        <li>Location data to help match lost and found items geographically</li>
-                        <li>Communication history between users regarding items</li>
-                        <li>Technical data (IP address, browser type, device information)</li>
-                    </ul>
-                </p>
-                
-                <h4>2. How We Use Your Information</h4>
-                <p>We use collected information to:
-                    <ul>
-                        <li>Match lost items with found items in your area</li>
-                        <li>Facilitate communication between users</li>
-                        <li>Improve our matching algorithms and user experience</li>
-                        <li>Send notifications about potential matches</li>
-                        <li>Ensure platform security and prevent fraud</li>
-                        <li>Comply with legal obligations</li>
-                    </ul>
-                </p>
-                
-                <h4>3. Item Information Sharing</h4>
-                <p>To help reunite items with their owners, we may share:
-                    <ul>
-                        <li>Item descriptions and photos with other users in your area</li>
-                        <li>General location data (neighborhood/city level, not exact addresses)</li>
-                        <li>Contact method you choose to share (platform messaging or provided contact info)</li>
-                    </ul>
-                    We never share your exact address, phone number, or personal financial information without your explicit consent.
-                </p>
-                
-                <h4>4. Data Security</h4>
-                <p>We implement security measures to protect your information:
-                    <ul>
-                        <li>Encryption of sensitive data in transit and at rest</li>
-                        <li>Regular security assessments and updates</li>
-                        <li>Limited employee access to user data</li>
-                        <li>Secure authentication procedures</li>
-                    </ul>
-                </p>
-                
-                <h4>5. Your Privacy Choices</h4>
-                <p>You can:
-                    <ul>
-                        <li>Adjust visibility settings for your listings</li>
-                        <li>Choose which contact methods to share</li>
-                        <li>Delete your account and associated data</li>
-                        <li>Opt-out of non-essential communications</li>
-                        <li>Request access to your personal data</li>
-                    </ul>
-                </p>
-                
-                <h4>6. Location Data</h4>
-                <p>We use location information to:
-                    <ul>
-                        <li>Show relevant lost and found items in your area</li>
-                        <li>Improve matching accuracy</li>
-                        <li>Provide location-based notifications</li>
-                    </ul>
-                    You can control location sharing through your device settings and our app permissions.
-                </p>
-                
-                <h4>7. Data Retention</h4>
-                <p>We retain your information:
-                    <ul>
-                        <li>While your account is active</li>
-                        <li>For resolved item listings: 90 days after resolution</li>
-                        <li>For unresolved listings: Until you delete them or 1 year</li>
-                        <li>As required by law for legal compliance</li>
-                    </ul>
-                </p>
-                
-                <h4>8. Changes to Privacy Policy</h4>
-                <p>We will notify users of significant changes to our privacy practices. Continued use of Lost & Found Hub after changes constitutes acceptance of the updated policy.</p>
-                
-                <h4>9. Contact Us</h4>
-                <p>For privacy-related questions or concerns, please contact our privacy team at privacy@lostfoundhub.com</p>
-            </div>
+              <h4>1. Information We Collect</h4>
+              <p>To provide our lost and found matching services, we collect:
+                  <ul>
+                      <li>Account information (name, email, contact details)</li>
+                      <li>Item descriptions and photos you choose to share</li>
+                      <li>Location data to help match lost and found items geographically</li>
+                      <li>Communication history between users regarding items</li>
+                      <li>Technical data (IP address, browser type, device information)</li>
+                  </ul>
+              </p>
+              
+              <h4>2. How We Use Your Information</h4>
+              <p>We use collected information to:
+                  <ul>
+                      <li>Match lost items with found items in your area</li>
+                      <li>Facilitate communication between users</li>
+                      <li>Improve our matching algorithms and user experience</li>
+                      <li>Send notifications about potential matches</li>
+                      <li>Ensure platform security and prevent fraud</li>
+                      <li>Comply with legal obligations</li>
+                  </ul>
+              </p>
+              
+              <h4>3. Item Information Sharing</h4>
+              <p>To help reunite items with their owners, we may share:
+                  <ul>
+                      <li>Item descriptions and photos with other users in your area</li>
+                      <li>General location data (neighborhood/city level, not exact addresses)</li>
+                      <li>Contact method you choose to share (platform messaging or provided contact info)</li>
+                  </ul>
+                  We never share your exact address, phone number, or personal financial information without your explicit consent.
+              </p>
+              
+              <h4>4. Data Security</h4>
+              <p>We implement security measures to protect your information:
+                  <ul>
+                      <li>Encryption of sensitive data in transit and at rest</li>
+                      <li>Regular security assessments and updates</li>
+                      <li>Limited employee access to user data</li>
+                      <li>Secure authentication procedures</li>
+                  </ul>
+              </p>
+              
+              <h4>5. Your Privacy Choices</h4>
+              <p>You can:
+                  <ul>
+                      <li>Adjust visibility settings for your listings</li>
+                      <li>Choose which contact methods to share</li>
+                      <li>Delete your account and associated data</li>
+                      <li>Opt-out of non-essential communications</li>
+                      <li>Request access to your personal data</li>
+                  </ul>
+              </p>
+              
+              <h4>6. Location Data</h4>
+              <p>We use location information to:
+                  <ul>
+                      <li>Show relevant lost and found items in your area</li>
+                      <li>Improve matching accuracy</li>
+                      <li>Provide location-based notifications</li>
+                  </ul>
+                  You can control location sharing through your device settings and our app permissions.
+              </p>
+              
+              <h4>7. Data Retention</h4>
+              <p>We retain your information:
+                  <ul>
+                      <li>While your account is active</li>
+                      <li>For resolved item listings: 90 days after resolution</li>
+                      <li>For unresolved listings: Until you delete them or 1 year</li>
+                      <li>As required by law for legal compliance</li>
+                  </ul>
+              </p>
+              
+              <h4>8. Changes to Privacy Policy</h4>
+              <p>We will notify users of significant changes to our privacy practices. Continued use of Lost & Found Hub after changes constitutes acceptance of the updated policy.</p>
+              
+              <h4>9. Contact Us</h4>
+              <p>For privacy-related questions or concerns, please contact our privacy team at privacy@lostfoundhub.com</p>
+        </div>
       </div>
     </div>
 
@@ -516,7 +580,6 @@
         </div>
     </div>
 
-    <!-- Success Modal -->
     <div class="success-modal-backdrop" id="successModal">
         <div class="success-modal">
             <div class="success-icon">
@@ -529,6 +592,12 @@
     </div>
 
     <script>
+        // Initialize EmailJS with your public key
+        (function() {
+            // **IMPORTANT**: Replace with your actual EmailJS public key
+            emailjs.init("ieCJeX-5LsiuaA20c"); 
+        })();
+
         // Toggle account dropdown
         document.getElementById('accountIcon').addEventListener('click', function() {
             document.getElementById('accountDropdown').classList.toggle('active');
@@ -560,7 +629,9 @@
             const location = document.getElementById('location').value.trim();
             const date = document.getElementById('date').value;
             const email = document.getElementById('contactEmail').value.trim();
+            const phone = document.getElementById('contactphone').value.trim();
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const phoneRegex = /^\d{10}$/;
 
             // Validate item type
             if (!itemType) { 
@@ -619,7 +690,7 @@
             }
 
             // Validate phone
-            if (!email || !emailRegex.test(email)) { 
+            if (!phone || !phoneRegex.test(phone)) { 
                 document.getElementById('contactphone-error').style.display = 'block'; 
                 isValid = false; 
             } else { 
@@ -628,12 +699,55 @@
 
             // Show success modal if valid
             if (isValid) {
-                const successModal = document.getElementById('successModal');
-                successModal.style.display = 'flex';
+                // Show loading spinner
+                document.getElementById('loadingSpinner').style.display = 'block';
+                
+                // Collect form data
+                const formData = {
+                    itemType: itemType.value,
+                    itemName: itemName,
+                    category: category,
+                    description: description,
+                    location: location,
+                    date: date,
+                    contactEmail: email,
+                    contactPhone: phone,
+                    timestamp: new Date().toLocaleString()
+                };
+                
+                console.log('Sending email with data:', formData);
 
-                // Reset form
-                this.reset();
-                document.getElementById('date').valueAsDate = new Date();
+                // Send email to admin using EmailJS
+                // **IMPORTANT**: Replace with your Service ID and Template ID
+                emailjs.send('service_csp5v7g', 'template_ye5sd7p', formData)
+                    .then(function(response) {
+                        console.log('Email sent successfully!', response.status, response.text);
+                        
+                        // Hide loading spinner
+                        document.getElementById('loadingSpinner').style.display = 'none';
+                        
+                        // Show success modal
+                        const successModal = document.getElementById('successModal');
+                        successModal.style.display = 'flex';
+
+                        // Reset form
+                        document.getElementById('itemForm').reset();
+                        document.getElementById('date').valueAsDate = new Date();
+                    }, function(error) {
+                        console.error('Failed to send email:', error);
+                        
+                        // Hide loading spinner
+                        document.getElementById('loadingSpinner').style.display = 'none';
+                        
+                        // Show detailed error message
+                        if (error.status === 404) {
+                            alert('Email service not found. Please check your EmailJS Service ID and Template ID in the dashboard.');
+                        } else if (error.text && error.text.includes('recipients address is empty')) {
+                            alert('Email configuration error: The recipient email is not set in your EmailJS template. Please set the "To Email" in your EmailJS template.');
+                        } else {
+                            alert('Failed to send email. Error: ' + (error.text || JSON.stringify(error)));
+                        }
+                    });
             }
         });
 

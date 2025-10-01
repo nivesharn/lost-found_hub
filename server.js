@@ -19,7 +19,7 @@ const pool = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '1234',
-    database: process.env.DB_NAME || 'lost_found',
+    database: process.env.DB_NAME || 'lost_n_found',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -36,8 +36,8 @@ const generateToken = (userId) => jwt.sign({ id: userId }, JWT_SECRET, { expires
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER, // your Gmail
-        pass: process.env.EMAIL_PASS  // 16-character App Password
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 });
 
@@ -45,20 +45,15 @@ const transporter = nodemailer.createTransport({
 app.post('/api/signup', async (req, res) => {
     try {
         const { username, email, password } = req.body;
-
         const [existingUser] = await pool.query(
             'SELECT * FROM users WHERE email = ? OR username = ?',
             [email, username]
         );
-
-        if (existingUser.length > 0) {
-            return res.status(400).json({ success: false, message: 'User with this email or username already exists' });
-        }
+        if (existingUser.length > 0) return res.status(400).json({ success: false, message: 'User with this email or username already exists' });
 
         const passwordHash = await bcrypt.hash(password, 10);
-
         const [result] = await pool.query(
-            'INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)',
+            'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
             [username, email, passwordHash, 'user']
         );
 
@@ -97,7 +92,7 @@ app.post('/api/login', async (req, res) => {
         if (users.length === 0) return res.status(404).json({ success: false, message: 'User not found' });
 
         const user = users[0];
-        const match = await bcrypt.compare(password, user.password_hash);
+        const match = await bcrypt.compare(password, user.password);
         if (!match) return res.status(401).json({ success: false, message: 'Invalid email or password' });
 
         const token = generateToken(user.user_id);
@@ -154,7 +149,11 @@ app.post('/api/forgot-password', async (req, res) => {
         if (users.length === 0) return res.status(400).json({ success: false, message: 'Email not registered' });
 
         const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: '15m' });
-        const resetLink = `http://localhost:3000/reset-password.html?token=${token}`;
+
+        // Save token to DB
+        await pool.query('UPDATE users SET reset_token = ? WHERE email = ?', [token, email]);
+
+        const resetLink = `http://localhost:3000/reset-password.html?token=${token}&email=${encodeURIComponent(email)}`;
 
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
@@ -172,13 +171,19 @@ app.post('/api/forgot-password', async (req, res) => {
 
 // ===================== RESET PASSWORD =====================
 app.post('/api/reset-password', async (req, res) => {
-    const { token, password } = req.body;
+    const { token, newPassword } = req.body;
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        const hashedPassword = await bcrypt.hash(password, 10);
 
-        await pool.query('UPDATE users SET password_hash = ? WHERE email = ?', [hashedPassword, decoded.email]);
-        res.json({ success: true, message: 'Password updated successfully' });
+        const [users] = await pool.query('SELECT * FROM users WHERE email = ? AND reset_token = ?', [decoded.email, token]);
+        if (users.length === 0) return res.status(400).json({ success: false, message: 'Invalid or expired token' });
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update password and clear reset_token
+        await pool.query('UPDATE users SET password = ?, reset_token = NULL WHERE email = ?', [hashedPassword, decoded.email]);
+
+        res.json({ success: true, message: 'Password updated successfully. Use new password to login.' });
     } catch (error) {
         console.error('Reset password error:', error);
         res.status(400).json({ success: false, message: 'Invalid or expired token' });

@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit an Item | Lost & Found Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="forms.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        /* --- Modern Success Modal Styles --- */
+        .success-modal-backdrop {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .success-modal {
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            width: 400px;
+            transform: scale(0.9);
+            opacity: 0;
+            animation: modalFadeIn 0.3s ease-out forwards;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #28a745; /* Green for success */
+            color: white;
+            font-size: 40px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: iconPopIn 0.4s 0.2s ease-out backwards;
+        }
+
+        .success-modal h2 {
+            margin: 0 0 10px 0;
+            font-size: 2em;
+            color: #333;
+        }
+
+        .success-modal p {
+            margin: 0;
+            color: #666;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        .success-button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        
+        .success-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #007BFF;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--text-color);
+            color: white;
+            padding: 25px 0;
+            text-align: center;
+            margin-top: auto;
+            border-top: 1px solid #555;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        @keyframes modalFadeIn {
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes iconPopIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Modal styles for footer links */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            padding: 20px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between; /* FIXED: was 'between' */
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            flex: 1;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .modal-body {
+            line-height: 1.6;
+        }
+
+        .modal-body h4 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .modal-body ul {
+            padding-left: 20px;
+        }
+
+        .modal-body li {
+            margin-bottom: 8px;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-search-location" style="color: #007BFF;"></i>
+                <a href="index.html"><span>Lost & Found Hub</span></a>
+            </div>
+            <nav id="mainNav">
+                <ul>
+                    <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="contact.html"><i class="fas fa-phone contact-icons"></i> Contact</a></li>
+                </ul>
+            </nav>
+            <div class="account-section" id="accountSection">
+                <div class="account-icon" id="accountIcon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="dropdown" id="accountDropdown">
+                    <div class="user-info">
+                        <div class="user-avatar"><i class="fas fa-user"></i></div>
+                        <div class="user-details">
+                            <h3 id="username">nivesharm</h3>
+                            <p id="useremail">nivesharm@example.com</p>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu">
+                        <li><a href="profile.html"><i class="fas fa-user-circle"></i> Your Profile</a></li>
+                        <li><a href="help.html"><i class="fas fa-question-circle"></i> Help & Support</a></li>
+                        <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
+                        <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                        <li><a href="login.html" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+            <button class="hamburger-menu" id="hamburgerMenu"><i class="fas fa-bars"></i></button>
+        </div>
+    </header>
+
+    <main class="container form-page">
+        <section class="form-section">
+            <h1>Report a Lost or Found Item</h1>
+            <form id="itemForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="itemType">Are you reporting a:</label>
+                    <div class="radio-group">
+                        <input type="radio" id="itemTypeLost" name="itemType" value="Lost" required>
+                        <label class="lost-red" for="itemTypeLost"><i class="fas fa-times-circle"></i> Lost Item</label>
+                        <input type="radio" id="itemTypeFound" name="itemType" value="Found">
+                        <label for="itemTypeFound"><i class="fas fa-check-circle"></i> Found Item</label>
+                    </div>
+                    <span class="error-message" id="itemType-error">Please select an item type.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="itemName">Item Name <span class="required">*</span></label>
+                    <input type="text" id="itemName" name="name" required placeholder="e.g., Blue Water Bottle, Black Leather Wallet">
+                    <span class="error-message" id="itemName-error">Item name is required.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category <span class="required">*</span></label>
+                    <select id="category" name="category" required>
+                        <option value="">Select a category</option>
+                        <option value="Electronics">Electronics (Laptop, Phone, Charger)</option>
+                        <option value="ID Cards">ID Cards (Student ID, Driver's License)</option>
+                        <option value="Wallets">Wallets/Purses</option>
+                        <option value="Books">Books/Notebooks</option>
+                        <option value="Clothing">Clothing/Accessories</option>
+                        <option value="Keys">Keys</option>
+                        <option value="Jewelry">Jewelry</option>
+                        <option value="Bags">Bags/Backpacks</option>
+                        <option value="Writing Instruments">Writing Instruments (Pens, Pencils)</option>
+                        <option value="Sports Equipment">Sports Equipment</option>
+                        <option value="Other" style="color: red;">Other - Please mention in description</option>
+                    </select>
+                    <span class="error-message" id="category-error">Category is required.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description <span class="required">*</span></label>
+                    <textarea id="description" name="description" rows="5" required placeholder="Provide details like color, brand, unique markings, contents (if applicable)."></textarea>
+                    <span class="error-message" id="description-error">Description is required.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Location (Where it was lost/found) <span class="required">*</span></label>
+                    <input type="text" id="location" name="location" required placeholder="e.g., CSE Lab, Library 3rd Floor, Near Main Gate">
+                    <span class="error-message" id="location-error">Location is required.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Date <span class="required">*</span></label>
+                    <input type="date" id="date" name="date" required>
+                    <span class="error-message" id="date-error">Date is required.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="contactEmail">Your Contact Email <span class="required">*</span></label>
+                    <input type="email" id="contactEmail" name="contactEmail" required placeholder="your.email@example.com">
+                    <span class="error-message" id="contactEmail-error">A valid email is required.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="contactphone">Your Contact Phone <span class="required">*</span></label>
+                    <input type="tel" id="contactphone" name="contactphone" required placeholder="Enter your number" maxlength="10">
+                    <span class="error-message" id="contactphone-error">A valid phone number is required.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="itemImage">Upload Image (Optional, but highly recommended)</label>
+                    <input type="file" id="itemImage" name="itemImage" accept="image/*">
+                    <span class="error-message" id="itemImage-error"></span>
+                    <p class="help-text">Max file size: 2MB. Supported formats: JPG, PNG, GIF.</p>
+                </div>
+
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner"></div>
+                    <p>Submitting your report and notifying admin...</p>
+                </div>
+
+                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit Report</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 College Lost & Found Hub. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#" id="privacyLink" aria-label="Privacy Policy">Privacy Policy</a> | 
+                <a href="#" id="serviceLink" aria-label="Terms of Service">Terms of Service</a> | 
+                <a href="#" id="termsLink" aria-label="Terms & Conditions">Terms & Conditions</a>
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+
+    <div class="modal" id="privacyModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 style="color:#007BFF;">Lost & Found Hub - Privacy Policy</h3>
+          <button class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+                <h4>1. Information We Collect</h4>
+                <p>To provide our lost and found matching services, we collect:
+                    <ul>
+                        <li>Account information (name, email, contact details)</li>
+                        <li>Item descriptions and photos you choose to share</li>
+                        <li>Location data to help match lost and found items geographically</li>
+                        <li>Communication history between users regarding items</li>
+                        <li>Technical data (IP address, browser type, device information)</li>
+                    </ul>
+                </p>
+                
+                <h4>2. How We Use Your Information</h4>
+                <p>We use collected information to:
+                    <ul>
+                        <li>Match lost items with found items in your area</li>
+                        <li>Facilitate communication between users</li>
+                        <li>Improve our matching algorithms and user experience</li>
+                        <li>Send notifications about potential matches</li>
+                        <li>Ensure platform security and prevent fraud</li>
+                        <li>Comply with legal obligations</li>
+                    </ul>
+                </p>
+                
+                <h4>3. Item Information Sharing</h4>
+                <p>To help reunite items with their owners, we may share:
+                    <ul>
+                        <li>Item descriptions and photos with other users in your area</li>
+                        <li>General location data (neighborhood/city level, not exact addresses)</li>
+                        <li>Contact method you choose to share (platform messaging or provided contact info)</li>
+                    </ul>
+                    We never share your exact address, phone number, or personal financial information without your explicit consent.
+                </p>
+                
+                <h4>4. Data Security</h4>
+                <p>We implement security measures to protect your information:
+                    <ul>
+                        <li>Encryption of sensitive data in transit and at rest</li>
+                        <li>Regular security assessments and updates</li>
+                        <li>Limited employee access to user data</li>
+                        <li>Secure authentication procedures</li>
+                    </ul>
+                </p>
+                
+                <h4>5. Your Privacy Choices</h4>
+                <p>You can:
+                    <ul>
+                        <li>Adjust visibility settings for your listings</li>
+                        <li>Choose which contact methods to share</li>
+                        <li>Delete your account and associated data</li>
+                        <li>Opt-out of non-essential communications</li>
+                        <li>Request access to your personal data</li>
+                    </ul>
+                </p>
+                
+                <h4>6. Location Data</h4>
+                <p>We use location information to:
+                    <ul>
+                        <li>Show relevant lost and found items in your area</li>
+                        <li>Improve matching accuracy</li>
+                        <li>Provide location-based notifications</li>
+                    </ul>
+                    You can control location sharing through your device settings and our app permissions.
+                </p>
+                
+                <h4>7. Data Retention</h4>
+                <p>We retain your information:
+                    <ul>
+                        <li>While your account is active</li>
+                        <li>For resolved item listings: 90 days after resolution</li>
+                        <li>For unresolved listings: Until you delete them or 1 year</li>
+                        <li>As required by law for legal compliance</li>
+                    </ul>
+                </p>
+                
+                <h4>8. Changes to Privacy Policy</h4>
+                <p>We will notify users of significant changes to our privacy practices. Continued use of Lost & Found Hub after changes constitutes acceptance of the updated policy.</p>
+                
+                <h4>9. Contact Us</h4>
+                <p>For privacy-related questions or concerns, please contact our privacy team at privacy@lostfoundhub.com</p>
+            </div>
+      </div>
+    </div>
+
+    <div class="modal" id="serviceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="color: #007BFF;">Lost & Found Hub - Terms of Service</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4>1. Our Service</h4>
+                <p>Welcome to Lost & Found Hub. Our service provides a platform to help users post and search for lost and found items within a specific community. We aim to facilitate the return of belongings but do not participate in the exchange or guarantee outcomes.</p>
+                <h4>2. User Accounts</h4>
+                <p>To post an item, you may be required to create an account. You agree to provide truthful information and are responsible for maintaining the confidentiality of your account password. You are solely responsible for all activities that occur under your account.</p>
+                <h4>3. Acceptable Use Policy</h4>
+                <p>You agree not to use the service to post false or misleading information, harass other users, or post unlawful content.</p>
+                <h4>4. User-Generated Content</h4>
+                <p>You retain ownership of the content you post. However, by posting, you grant Lost & Found Hub a license to display that content on our platform for the purpose of operating the service.</p>
+                <h4>5. Termination</h4>
+                <p>We reserve the right to suspend or terminate your access to the service at our discretion for any conduct that violates these terms.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="termsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Lost & Found Hub - Terms & Conditions</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4>1. Acceptance of Terms</h4>
+                <p>By accessing and using Lost & Found Hub, you accept and agree to be bound by these Terms & Conditions. Our platform connects people who have lost items with those who have found them.</p>
+                
+                <h4>2. User Responsibilities</h4>
+                <p>As a user of Lost & Found Hub, you agree to:
+                    <ul>
+                        <li>Provide accurate information about lost or found items</li>
+                        <li>Respond promptly to legitimate inquiries about your listings</li>
+                        <li>Treat other users with respect and courtesy</li>
+                        <li>Not list prohibited or illegal items</li>
+                        <li>Verify ownership before returning found items</li>
+                    </ul>
+                </p>
+                
+                <h4>3. Item Listings and Verification</h4>
+                <p>Lost & Found Hub serves as a connection platform only. We do not:
+                    <ul>
+                        <li>Verify the accuracy of user listings</li>
+                        <li>Guarantee the return of lost items</li>
+                        <li>Take possession of any lost or found items</li>
+                        <li>Mediate disputes between users</li>
+                    </ul>
+                    Users are responsible for verifying ownership through reasonable means before transferring items.
+                </p>
+                
+                <h4>4. Prohibited Items</h4>
+                <p>You may not list the following items on our platform:
+                    <ul>
+                        <li>Weapons, firearms, or ammunition</li>
+                        <li>Illegal substances or drugs</li>
+                        <li>Hazardous materials</li>
+                        <li>Stolen property</li>
+                        <li>Perishable items</li>
+                        <li>Animals or pets</li>
+                    </ul>
+                </p>
+                
+                <h4>5. Safe Exchange Guidelines</h4>
+                <p>For your safety, we recommend:
+                    <ul>
+                        <li>Meeting in public, well-lit areas</li>
+                        <li>Bringing a friend or family member</li>
+                        <li>Verifying the item matches the description</li>
+                        <li>Not sharing personal financial information</li>
+                        <li>Reporting suspicious activity to local authorities</li>
+                    </ul>
+                </p>
+                
+                <h4>6. Limitation of Liability</h4>
+                <p>Lost & Found Hub is not responsible for:
+                    <ul>
+                        <li>Items that are not returned or claimed</li>
+                        <li>Misrepresentation of items by users</li>
+                        <li>User interactions or exchanges</li>
+                        <li>Damages or losses resulting from platform use</li>
+                        <li>Technical issues that may temporarily limit access</li>
+                    </ul>
+                </p>
+                
+                <h4>7. Account Termination</h4>
+                <p>We reserve the right to suspend or terminate accounts that:
+                    <ul>
+                        <li>Violate these terms and conditions</li>
+                        <li>Engage in fraudulent or suspicious activity</li>
+                        <li>Harass other users</li>
+                        <li>Repeatedly post inaccurate information</li>
+                    </ul>
+                </p>
+                
+                <h4>8. Changes to Terms</h4>
+                <p>We may update these Terms & Conditions periodically. Continued use of Lost & Found Hub after changes constitutes acceptance of the modified terms.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="success-modal-backdrop" id="successModal">
+        <div class="success-modal">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h2>Submitted!</h2>
+            <p>Our coordinator will contact you.</p>
+            <button class="success-button" id="successButton">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize EmailJS with your public key
+        (function() {
+            // Replace with your actual EmailJS public key
+            emailjs.init("CFONKQ6gS23NhWmVC");
+        })();
+
+        // Toggle account dropdown
+        document.getElementById('accountIcon').addEventListener('click', function() {
+            document.getElementById('accountDropdown').classList.toggle('active');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const accountSection = document.getElementById('accountSection');
+            if (!accountSection.contains(event.target)) {
+                document.getElementById('accountDropdown').classList.remove('active');
+            }
+        });
+
+        // Mobile menu toggle
+        document.getElementById('hamburgerMenu').addEventListener('click', function() {
+            document.getElementById('mainNav').classList.toggle('active');
+        });
+
+        // Form validation and success modal
+        document.getElementById('itemForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            let isValid = true;
+
+            // Validation logic
+            const itemType = document.querySelector('input[name="itemType"]:checked');
+            const itemName = document.getElementById('itemName').value.trim();
+            const category = document.getElementById('category').value;
+            const description = document.getElementById('description').value.trim();
+            const location = document.getElementById('location').value.trim();
+            const date = document.getElementById('date').value;
+            const email = document.getElementById('contactEmail').value.trim();
+            const phone = document.getElementById('contactphone').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const phoneRegex = /^\d{10}$/;
+
+            // Validate item type
+            if (!itemType) { 
+                document.getElementById('itemType-error').style.display = 'block'; 
+                isValid = false; 
+            } else { 
+                document.getElementById('itemType-error').style.display = 'none'; 
+            }
+
+            // Validate item name
+            if (!itemName) { 
+                document.getElementById('itemName-error').style.display = 'block'; 
+                isValid = false; 
+            } else { 
+                document.getElementById('itemName-error').style.display = 'none'; 
+            }
+
+            // Validate category
+            if (!category) { 
+                document.getElementById('category-error').style.display = 'block'; 
+                isValid = false; 
+            } else { 
+                document.getElementById('category-error').style.display = 'none'; 
+            }
+
+            // Validate description
+            if (!description) { 
+                document.getElementById('description-error').style.display = 'block'; 
+                isValid = false; 
+            } else { 
+                document.getElementById('description-error').style.display = 'none'; 
+            }
+
+            // Validate location
+            if (!location) { 
+                document.getElementById('location-error').style.display = 'block'; 
+                isValid = false; 
+            } else { 
+                document.getElementById('location-error').style.display = 'none'; 
+            }
+
+            // Validate date
+            if (!date) { 
+                document.getElementById('date-error').style.display = 'block'; 
+                isValid = false; 
+            } else { 
+                document.getElementById('date-error').style.display = 'none'; 
+            }
+
+            // Validate email
+            if (!email || !emailRegex.test(email)) { 
+                document.getElementById('contactEmail-error').style.display = 'block'; 
+                isValid = false; 
+            } else { 
+                document.getElementById('contactEmail-error').style.display = 'none'; 
+            }
+
+            // Validate phone
+            if (!phone || !phoneRegex.test(phone)) { 
+                document.getElementById('contactphone-error').style.display = 'block'; 
+                isValid = false; 
+            } else { 
+                document.getElementById('contactphone-error').style.display = 'none'; 
+            }
+
+            // Show success modal if valid
+            if (isValid) {
+                // Show loading spinner
+                document.getElementById('loadingSpinner').style.display = 'block';
+                
+                // Collect form data
+                const formData = {
+                    itemType: itemType.value,
+                    itemName: itemName,
+                    category: category,
+                    description: description,
+                    location: location,
+                    date: date,
+                    contactEmail: email,
+                    contactPhone: phone,
+                    timestamp: new Date().toLocaleString(),
+                    adminEmail: "lostnfoundhub1@gmail.com" // Admin email address
+                };
+
+                // Send email to admin using EmailJS
+                emailjs.send('service_u5hfgqv', 'template_ddm7c4h', formData)
+                    .then(function(response) {
+                        console.log('Email sent successfully!', response.status, response.text);
+                        
+                        // Hide loading spinner
+                        document.getElementById('loadingSpinner').style.display = 'none';
+                        
+                        // Show success modal
+                        const successModal = document.getElementById('successModal');
+                        successModal.style.display = 'flex';
+
+                        // Reset form
+                        document.getElementById('itemForm').reset();
+                        document.getElementById('date').valueAsDate = new Date();
+                    }, function(error) {
+                        console.error('Failed to send email:', error);
+                        
+                        // Hide loading spinner
+                        document.getElementById('loadingSpinner').style.display = 'none';
+                        
+                        // Show error message
+                        alert('There was an error submitting your report. Please try again later.');
+                    });
+            }
+        });
+
+        // Close success modal
+        document.getElementById('successButton').addEventListener('click', function() {
+            document.getElementById('successModal').style.display = 'none';
+        });
+
+        // Set today's date as default and max
+        const today = new Date().toISOString().split('T')[0];
+        const dateInput = document.getElementById('date');
+        dateInput.max = today;
+        dateInput.value = today;
+
+        // Modal functionality for footer links
+        document.addEventListener('DOMContentLoaded', function() {
+            const modalBackdrop = document.getElementById('modalBackdrop');
+            const privacyModal = document.getElementById('privacyModal');
+            const serviceModal = document.getElementById('serviceModal');
+            const termsModal = document.getElementById('termsModal');
+            const privacyLink = document.getElementById('privacyLink');
+            const serviceLink = document.getElementById('serviceLink');
+            const termsLink = document.getElementById('termsLink');
+
+            // Open modal functions
+            function openModal(modal) {
+                modalBackdrop.style.display = 'block';
+                modal.style.display = 'block';
+                document.body.classList.add('modal-open');
+            }
+
+            function closeModals() {
+                modalBackdrop.style.display = 'none';
+                privacyModal.style.display = 'none';
+                serviceModal.style.display = 'none';
+                termsModal.style.display = 'none';
+                document.body.classList.remove('modal-open');
+            }
+
+            // Event listeners for footer links
+            privacyLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                openModal(privacyModal);
+            });
+
+            serviceLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                openModal(serviceModal);
+            });
+
+            termsLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                openModal(termsModal);
+            });
+
+            // Close modals
+            modalBackdrop.addEventListener('click', closeModals);
+            
+            document.querySelectorAll('.close-btn').forEach(btn => {
+                btn.addEventListener('click', closeModals);
+            });
+
+            // Close with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModals();
+                }
+            });
+        });
+    </script>
+
+
+
+
+</body>
+</html>
