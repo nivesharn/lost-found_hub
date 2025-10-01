@@ -1,13 +1,15 @@
+// ===================== IMPORTS =====================
 const express = require('express');
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
+const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
 require('dotenv').config();
 
+// ===================== APP SETUP =====================
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
@@ -30,6 +32,15 @@ const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 const generateToken = (userId) => jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: '1h' });
 
+// ===================== MAILER =====================
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER, // your Gmail
+        pass: process.env.EMAIL_PASS  // 16-character App Password
+    }
+});
+
 // ===================== SIGNUP =====================
 app.post('/api/signup', async (req, res) => {
     try {
@@ -41,10 +52,7 @@ app.post('/api/signup', async (req, res) => {
         );
 
         if (existingUser.length > 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'User with this email or username already exists'
-            });
+            return res.status(400).json({ success: false, message: 'User with this email or username already exists' });
         }
 
         const passwordHash = await bcrypt.hash(password, 10);
@@ -60,21 +68,15 @@ app.post('/api/signup', async (req, res) => {
             success: true,
             message: 'User created successfully',
             token,
-            user: {
-                user_id: result.insertId,
-                username,
-                email,
-                role: 'user'
-            }
+            user: { user_id: result.insertId, username, email, role: 'user' }
         });
-
     } catch (error) {
         console.error('Signup error:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });
 
-// ===================== LOGIN (ADMIN + USER) =====================
+// ===================== LOGIN =====================
 app.post('/api/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -87,26 +89,16 @@ app.post('/api/login', async (req, res) => {
                 role: "admin",
                 token,
                 message: "Admin login successful",
-                user: {
-                    user_id: "admin",
-                    username: "Administrator",
-                    email: "admin@gmail.com",
-                    role: "admin"
-                }
+                user: { user_id: "admin", username: "Administrator", email, role: "admin" }
             });
         }
 
-        // User login
         const [users] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
-        if (users.length === 0) {
-            return res.status(404).json({ success: false, message: 'User not found' });
-        }
+        if (users.length === 0) return res.status(404).json({ success: false, message: 'User not found' });
 
         const user = users[0];
         const match = await bcrypt.compare(password, user.password_hash);
-        if (!match) {
-            return res.status(401).json({ success: false, message: 'Invalid email or password' });
-        }
+        if (!match) return res.status(401).json({ success: false, message: 'Invalid email or password' });
 
         const token = generateToken(user.user_id);
 
@@ -115,14 +107,8 @@ app.post('/api/login', async (req, res) => {
             role: user.role,
             token,
             message: "User login successful",
-            user: {
-                user_id: user.user_id,
-                username: user.username,
-                email: user.email,
-                role: user.role
-            }
+            user: { user_id: user.user_id, username: user.username, email: user.email, role: user.role }
         });
-
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
@@ -133,47 +119,18 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/google-auth', async (req, res) => {
     try {
         const { id_token } = req.body;
+        const ticket = await googleClient.verifyIdToken({ idToken: id_token, audience: GOOGLE_CLIENT_ID });
+        const { sub: googleId, email, name, picture } = ticket.getPayload();
 
-        const ticket = await googleClient.verifyIdToken({
-            idToken: id_token,
-            audience: GOOGLE_CLIENT_ID
-        });
-
-        const payload = ticket.getPayload();
-        const { sub: googleId, email, name, picture } = payload;
-
-        // Check if Google user already exists
-        const [existingGoogleUser] = await pool.query(
-            'SELECT * FROM google_users WHERE google_id = ?',
-            [googleId]
-        );
-
+        const [existingGoogleUser] = await pool.query('SELECT * FROM google_users WHERE google_id = ?', [googleId]);
         if (existingGoogleUser.length > 0) {
             const token = generateToken(existingGoogleUser[0].google_user_id);
-            return res.json({
-                success: true,
-                message: 'Google login successful',
-                token,
-                user: {
-                    user_id: existingGoogleUser[0].google_user_id,
-                    email: existingGoogleUser[0].email,
-                    name: existingGoogleUser[0].name,
-                    picture: existingGoogleUser[0].picture,
-                    role: 'user'
-                }
-            });
+            return res.json({ success: true, message: 'Google login successful', token, user: existingGoogleUser[0] });
         }
 
-        // Check if email already exists in regular users
         const [existingUser] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
-        if (existingUser.length > 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'Email already registered with regular account'
-            });
-        }
+        if (existingUser.length > 0) return res.status(400).json({ success: false, message: 'Email already registered' });
 
-        // Create new Google user
         const [result] = await pool.query(
             'INSERT INTO google_users (google_id, email, name, picture) VALUES (?, ?, ?, ?)',
             [googleId, email, name, picture]
@@ -181,22 +138,50 @@ app.post('/api/google-auth', async (req, res) => {
 
         const token = generateToken(result.insertId);
 
-        res.json({
-            success: true,
-            message: 'Google account created successfully',
-            token,
-            user: {
-                user_id: result.insertId,
-                email,
-                name,
-                picture,
-                role: 'user'
-            }
-        });
+        res.json({ success: true, message: 'Google account created', token, user: { user_id: result.insertId, email, name, picture, role: 'user' } });
 
     } catch (error) {
         console.error('Google auth error:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+// ===================== FORGOT PASSWORD =====================
+app.post('/api/forgot-password', async (req, res) => {
+    const { email } = req.body;
+    try {
+        const [users] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+        if (users.length === 0) return res.status(400).json({ success: false, message: 'Email not registered' });
+
+        const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: '15m' });
+        const resetLink = `http://localhost:3000/reset-password.html?token=${token}`;
+
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: "Password Reset Link - Lost & Found Hub",
+            html: `<p>Click this link to reset your password (valid 15 min): <a href="${resetLink}">${resetLink}</a></p>`
+        });
+
+        res.json({ success: true, message: 'Reset link sent to email' });
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+// ===================== RESET PASSWORD =====================
+app.post('/api/reset-password', async (req, res) => {
+    const { token, password } = req.body;
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await pool.query('UPDATE users SET password_hash = ? WHERE email = ?', [hashedPassword, decoded.email]);
+        res.json({ success: true, message: 'Password updated successfully' });
+    } catch (error) {
+        console.error('Reset password error:', error);
+        res.status(400).json({ success: false, message: 'Invalid or expired token' });
     }
 });
 
@@ -217,26 +202,13 @@ function authenticateToken(req, res, next) {
 app.get('/api/profile', authenticateToken, async (req, res) => {
     try {
         if (req.user.id === "admin") {
-            return res.json({
-                success: true,
-                user: {
-                    user_id: "admin",
-                    username: "Administrator",
-                    email: "admin@gmail.com",
-                    role: "admin"
-                }
-            });
+            return res.json({ success: true, user: { user_id: "admin", username: "Administrator", email: "admin@gmail.com", role: "admin" } });
         }
 
-        const [users] = await pool.query(
-            'SELECT user_id, username, email, role FROM users WHERE user_id = ?',
-            [req.user.id]
-        );
-
+        const [users] = await pool.query('SELECT user_id, username, email, role FROM users WHERE user_id = ?', [req.user.id]);
         if (users.length === 0) return res.status(404).json({ success: false, message: 'User not found' });
 
         res.json({ success: true, user: users[0] });
-
     } catch (error) {
         console.error('Profile fetch error:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
@@ -245,6 +217,4 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
 
 // ===================== START SERVER =====================
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

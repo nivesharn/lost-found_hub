@@ -9,6 +9,47 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Additional CSS for dropdown fix */
+        .nav-dropdown {
+            position: relative;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            z-index: 1000;
+            padding: 8px 0;
+        }
+        
+        .nav-dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        .dropdown-content a {
+            display: block;
+            padding: 10px 16px;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.2s;
+        }
+        
+        .dropdown-content a:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* Ensure dropdown stays open when hovering over it */
+        .nav-dropdown:hover .dropdown-content,
+        .dropdown-content:hover {
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -21,12 +62,13 @@
                 <ul>
                     <li><a href="submit-item.html" id="navSubmitItem" aria-label="Submit Item"><i class="fas fa-plus-circle"></i> Submit Item</a></li>
                     <li class="nav-dropdown">
-                        <a> <i class="fas fa-info-circle"></i> More info<i class="fas fa-caret-down"></i>
+                        <a href="#" class="dropdown-toggle"> 
+                            <i class="fas fa-info-circle"></i> More info <i class="fas fa-caret-down"></i>
                         </a>
                         <div class="dropdown-content">
                             <a href="#about-us" aria-label="About Us"> <i class="fas fa-users"></i> About Us</a>
                             <a href="#reviews" aria-label="Reviews"><i class="fas fa-comments"></i> Reviews</a>
-                            <a href="#team" aria-label="Reviews"><i class="fas fa-cloud cloud-icon"></i> Our Team</a>
+                            <a href="#team" aria-label="Our Team"><i class="fas fa-cloud cloud-icon"></i> Our Team</a>
                             <a href="#statistics" aria-label="Statistics"><i class="fas fa-chart-bar"></i> Statistics</a>
                         </div>
                     </li>
@@ -114,7 +156,7 @@
             <h2>About Lost & Found Hub</h2>
             <p class="subtitle">
                 We are dedicated to reuniting people with their cherished belongings. Our platform leverages community and technology to make finding lost items simpler and more efficient for everyone. 
-                <a href="work.html" style="text-decoration:none;"><span style="color:#007BFF;" ><strong>Do visit Our Success Gallery.</strong></span></a>
+                <a href="work.html" style="text-decoration:none;"><span style="color:#007BFF;" ><strong>Do visit Our Success Gallery &#8599.</strong></span></a>
             </p>
 
             <div class="mission-vision-wrapper">
