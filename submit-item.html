@@ -9,6 +9,226 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
+        /* Header Styles */
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 90%;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #4CAF50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .logo a {
+            text-decoration: none;
+            color: #4CAF50;
+        }
+
+        .logo i {
+            font-size: 1.2em;
+            color:#007BFF;
+        }
+
+        nav {
+            flex: 1;
+            max-width: 300px;
+            margin: 0 20px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            justify-content: space-between;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: black;
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        nav ul li a:hover {
+            background-color: #e9ecef;
+            color: #007BFF;        
+        }
+
+        nav ul li a i {
+            margin-right: 8px;
+        }
+
+        .account-section {
+            position: relative;
+        }
+        
+        .account-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            overflow: hidden;
+            position: relative;
+            border: 3px solid #007BFF;
+        }
+        
+        .account-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+        
+        .account-icon .fa-user {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .account-icon:hover {
+            background-color: #3d8b40;
+        }
+        
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 280px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-top: 10px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-user-info {
+            display: flex;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            overflow: hidden;
+            position: relative;
+            border: 3px solid #007BFF;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+        
+        .user-avatar .fa-user {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .user-details h3 {
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+        
+        .user-details p {
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .dropdown-menu {
+            list-style: none;
+            padding: 10px 0;
+            margin: 0;
+        }
+        .dropdown-menu li {
+            margin: 0;
+        }
+        .dropdown-menu li a {
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #333;
+            text-decoration: none;
+        }
+        .dropdown-menu li a:hover {
+            background-color: #f4f7f6;
+        }
+        .logout-btn {
+            color: #e74c3c !important;
+        }
+
+        .hamburger-menu {
+            display: none; 
+            font-size: 1.8em;
+            color: #333;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .hamburger-menu:hover {
+            background-color: #f5f7fa;
+        }
+
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* Modal and Form Styles */
         .success-modal-backdrop {
             display: none;
             position: fixed;
@@ -44,6 +264,23 @@
             display: flex;
             justify-content: center;
             align-items: center;
+        }
+
+        /* ADDED: Success button styles */
+        .success-button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+
+        .success-button:hover {
+            background-color: #0056b3;
         }
 
         .loading-spinner {
@@ -89,11 +326,39 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content { 
+                flex-direction: column; 
+                gap: 10px; 
+            }
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .hamburger-menu {
+                display: block;
+            }
+            nav {
+                display: none;
+            }
+            nav.active {
+                display: block;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: white;
+                padding: 20px;
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            }
+        }
     </style>
 </head>
 <body>
     <header>
-        <div class="container header-content">
+        <div class="header-content">
             <div class="logo">
                 <i class="fas fa-search-location" style="color: #007BFF;"></i>
                 <a href="index.html"><span>Lost & Found Hub</span></a>
@@ -105,8 +370,34 @@
                 </ul>
             </nav>
             <div class="account-section" id="accountSection">
-                <!-- Your existing account section -->
+                <div class="account-icon" id="accountIcon">
+                    <i class="fas fa-user" id="accountIconFallback"></i>
+                    <img id="accountIconImage" alt="User Avatar">
+                </div>
+                <div class="dropdown" id="accountDropdown">
+                    <div class="dropdown-user-info">
+                        <div class="user-avatar">
+                            <i class="fas fa-user" id="dropdownAvatarFallback"></i>
+                            <img id="dropdownAvatarImage" alt="User Avatar">
+                        </div>
+                        <div class="user-details">
+                            <h3 id="username">nivesharm</h3>
+                            <p id="useremail">nivesharm@example.com</p>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu">
+                        <li><a href="profile.html"><i class="fas fa-user-circle"></i> Your Profile</a></li>
+                        <li><a href="submit-item.html" id="navSubmitItem" aria-label="Submit Item"><i class="fas fa-plus-circle"></i> Submit Item</a></li>
+                        <li><a href="help.html"><i class="fas fa-question-circle"></i> Help & Support</a></li>
+                        <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
+                        <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                        <li><a href="login.html" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </div>
             </div>
+            <button class="hamburger-menu" id="hamburgerMenu" aria-label="Toggle navigation menu">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
     </header>
 
@@ -221,6 +512,111 @@
     <script>
         // Initialize EmailJS
         emailjs.init("ieCJeX-5LsiuaA20c");
+
+        // Function to update avatars in header
+        function updateHeaderAvatars(avatarUrl) {
+            const accountIconImage = document.getElementById('accountIconImage');
+            const accountIconFallback = document.getElementById('accountIconFallback');
+            const dropdownAvatarImage = document.getElementById('dropdownAvatarImage');
+            const dropdownAvatarFallback = document.getElementById('dropdownAvatarFallback');
+            
+            if (avatarUrl && avatarUrl !== '') {
+                // Update account icon
+                accountIconImage.src = avatarUrl;
+                accountIconImage.style.display = 'block';
+                accountIconFallback.style.display = 'none';
+                
+                // Update dropdown avatar
+                dropdownAvatarImage.src = avatarUrl;
+                dropdownAvatarImage.style.display = 'block';
+                dropdownAvatarFallback.style.display = 'none';
+            } else {
+                // Show fallback icons if no avatar
+                accountIconImage.style.display = 'none';
+                accountIconFallback.style.display = 'block';
+                dropdownAvatarImage.style.display = 'none';
+                dropdownAvatarFallback.style.display = 'block';
+            }
+        }
+
+        // Function to update user info
+        function updateUserInfo(username, email) {
+            const usernameElement = document.getElementById('username');
+            const useremailElement = document.getElementById('useremail');
+            
+            if (username) {
+                usernameElement.textContent = username;
+            }
+            
+            if (email) {
+                useremailElement.textContent = email;
+            }
+        }
+
+        // Function to fetch user profile
+        async function fetchProfile() {
+            try {
+                const token = localStorage.getItem("authToken");
+                if (!token) {
+                    console.log("No auth token found");
+                    return;
+                }
+                
+                const res = await fetch("http://localhost:3000/api/profile", {
+                    method: "GET",
+                    headers: { 
+                        "Authorization": `Bearer ${token}`, 
+                        "Content-Type": "application/json" 
+                    }
+                });
+                
+                const result = await res.json();
+                if (result.success) {
+                    const user = result.user;
+                    updateUserInfo(user.username || user.name, user.email);
+                    
+                    // Update avatars if available
+                    if (user.avatar) {
+                        updateHeaderAvatars(user.avatar);
+                    } else {
+                        // Use default avatar
+                        updateHeaderAvatars('https://i.pravatar.cc/150?img=12');
+                    }
+                } else {
+                    console.error(result.message);
+                }
+            } catch (err) { 
+                console.error("Profile fetch failed:", err); 
+            }
+        }
+
+        // Toggle account dropdown
+        document.getElementById('accountIcon').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('accountDropdown').classList.toggle('active');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const accountSection = document.getElementById('accountSection');
+            if (!accountSection.contains(event.target)) {
+                document.getElementById('accountDropdown').classList.remove('active');
+            }
+        });
+
+        // Mobile menu toggle
+        document.getElementById('hamburgerMenu').addEventListener('click', function() {
+            document.getElementById('mainNav').classList.toggle('active');
+        });
+
+        // Logout functionality
+        document.querySelector('.logout-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Clear any stored authentication data
+            localStorage.removeItem('authToken');
+            // Redirect to login page
+            window.location.href = 'login.html';
+        });
 
         // Image preview functionality
         document.getElementById('itemImage').addEventListener('change', function(event) {
@@ -416,7 +812,7 @@
             return isValid;
         }
 
-        // Close success modal
+        // Close success modal - FIXED: Added proper event listener
         document.getElementById('successButton').addEventListener('click', function() {
             document.getElementById('successModal').style.display = 'none';
         });
@@ -424,12 +820,15 @@
         // Set today's date as default
         document.getElementById('date').valueAsDate = new Date();
 
-        // Check if user is logged in
+        // Load user profile and check authentication on page load
         document.addEventListener('DOMContentLoaded', function() {
             const token = localStorage.getItem('authToken');
             if (!token) {
                 alert('Please login to submit an item');
                 window.location.href = 'login.html';
+            } else {
+                // Load user profile if logged in
+                fetchProfile();
             }
         });
     </script>
