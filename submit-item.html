@@ -9,9 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
-        /* --- Modern Success Modal Styles --- */
         .success-modal-backdrop {
-            display: none; /* Hidden by default */
+            display: none;
             position: fixed;
             z-index: 1000;
             left: 0;
@@ -20,7 +19,6 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
             justify-content: center;
             align-items: center;
         }
@@ -33,55 +31,21 @@
             box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
             max-width: 90%;
             width: 400px;
-            transform: scale(0.9);
-            opacity: 0;
-            animation: modalFadeIn 0.3s ease-out forwards;
         }
 
         .success-icon {
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background-color: #28a745; /* Green for success */
+            background-color: #28a745;
             color: white;
             font-size: 40px;
             margin: 0 auto 20px auto;
             display: flex;
             justify-content: center;
             align-items: center;
-            animation: iconPopIn 0.4s 0.2s ease-out backwards;
         }
 
-        .success-modal h2 {
-            margin: 0 0 10px 0;
-            font-size: 2em;
-            color: #333;
-        }
-
-        .success-modal p {
-            margin: 0;
-            color: #666;
-            font-size: 1.1em;
-            line-height: 1.5;
-        }
-
-        .success-button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 20px;
-        }
-        
-        .success-button:hover {
-            background-color: #0056b3;
-        }
-
-        /* Loading Spinner */
         .loading-spinner {
             display: none;
             text-align: center;
@@ -98,154 +62,32 @@
             margin: 0 auto;
         }
 
+        .image-preview {
+            display: none;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .image-preview img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+
+        .remove-image {
+            margin-top: 5px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-
-        /* Footer */
-        footer {
-            background-color: var(--text-color);
-            color: white;
-            padding: 25px 0;
-            text-align: center;
-            margin-top: auto;
-            border-top: 1px solid #555;
-        }
-
-        .footer-links a {
-            color: white;
-            text-decoration: none;
-            margin: 0 10px;
-            transition: color 0.3s ease;
-        }
-
-        .footer-links a:hover {
-            color: var(--primary-color);
-        }
-
-        @keyframes modalFadeIn {
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        @keyframes iconPopIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            80% { transform: scale(1.1); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        /* Modal styles for footer links */
-        .modal-backdrop {
-            display: none;
-            position: fixed;
-            z-index: 999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
-            max-width: 90%;
-            width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-content {
-            padding: 20px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
-        }
-
-        .modal-header h3 {
-            margin: 0;
-            flex: 1;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #666;
-        }
-
-        .modal-body {
-            line-height: 1.6;
-        }
-
-        .modal-body h4 {
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-
-        .modal-body ul {
-            padding-left: 20px;
-        }
-
-        .modal-body li {
-            margin-bottom: 8px;
-        }
-
-        body.modal-open {
-            overflow: hidden;
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-wrap: wrap;
-            }
-
-            nav {
-                order: 3;
-                width: 100%;
-                margin-top: 15px;
-                display: none;
-            }
-
-            nav.active {
-                display: block;
-            }
-
-            nav ul {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .hamburger-menu {
-                display: block;
-            }
-
-            .form-section {
-                padding: 20px;
-            }
-
-            .radio-group {
-                flex-direction: column;
-                gap: 10px;
-            }
         }
     </style>
 </head>
@@ -263,27 +105,8 @@
                 </ul>
             </nav>
             <div class="account-section" id="accountSection">
-                <div class="account-icon" id="accountIcon">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div class="dropdown" id="accountDropdown">
-                    <div class="user-info">
-                        <div class="user-avatar"><i class="fas fa-user"></i></div>
-                        <div class="user-details">
-                            <h3 id="username">nivesharm</h3>
-                            <p id="useremail">nivesharm@example.com</p>
-                        </div>
-                    </div>
-                    <ul class="dropdown-menu">
-                        <li><a href="profile.html"><i class="fas fa-user-circle"></i> Your Profile</a></li>
-                        <li><a href="help.html"><i class="fas fa-question-circle"></i> Help & Support</a></li>
-                        <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
-                        <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
-                        <li><a href="login.html" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                    </ul>
-                </div>
+                <!-- Your existing account section -->
             </div>
-            <button class="hamburger-menu" id="hamburgerMenu"><i class="fas fa-bars"></i></button>
         </div>
     </header>
 
@@ -304,7 +127,7 @@
 
                 <div class="form-group">
                     <label for="itemName">Item Name <span class="required">*</span></label>
-                    <input type="text" id="itemName" name="name" required placeholder="e.g., Blue Water Bottle, Black Leather Wallet">
+                    <input type="text" id="itemName" name="itemName" required placeholder="e.g., Blue Water Bottle, Black Leather Wallet">
                     <span class="error-message" id="itemName-error">Item name is required.</span>
                 </div>
 
@@ -322,7 +145,7 @@
                         <option value="Bags">Bags/Backpacks</option>
                         <option value="Writing Instruments">Writing Instruments (Pens, Pencils)</option>
                         <option value="Sports Equipment">Sports Equipment</option>
-                        <option value="Other" style="color: red;">Other - Please mention in description</option>
+                        <option value="Other">Other - Please mention in description</option>
                     </select>
                     <span class="error-message" id="category-error">Category is required.</span>
                 </div>
@@ -352,16 +175,20 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="contactphone">Your Contact Phone <span class="required">*</span></label>
-                    <input type="tel" id="contactphone" name="contactphone" required placeholder="Enter your number" maxlength="10">
-                    <span class="error-message" id="contactphone-error">A valid phone number is required.</span>
+                    <label for="contactPhone">Your Contact Phone <span class="required">*</span></label>
+                    <input type="tel" id="contactPhone" name="contactPhone" required placeholder="Enter your number" maxlength="10">
+                    <span class="error-message" id="contactPhone-error">A valid phone number is required.</span>
                 </div>
 
                 <div class="form-group">
                     <label for="itemImage">Upload Image (Optional, but highly recommended)</label>
                     <input type="file" id="itemImage" name="itemImage" accept="image/*">
-                    <span class="error-message" id="itemImage-error"></span>
-                    <p class="help-text">Max file size: 2MB. Supported formats: JPG, PNG, GIF.</p>
+                    <div class="image-preview" id="imagePreview">
+                        <img id="previewImage" src="" alt="Image preview">
+                        <br>
+                        <button type="button" class="remove-image" id="removeImage">Remove Image</button>
+                    </div>
+                    <p class="help-text">Max file size: 5MB. Supported formats: JPG, PNG, GIF.</p>
                 </div>
 
                 <div class="loading-spinner" id="loadingSpinner">
@@ -377,445 +204,233 @@
     <footer>
         <div class="container">
             <p>&copy; 2025 College Lost & Found Hub. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="#" id="privacyLink" aria-label="Privacy Policy">Privacy Policy</a> | 
-                <a href="#" id="serviceLink" aria-label="Terms of Service">Terms of Service</a> | 
-                <a href="#" id="termsLink" aria-label="Terms & Conditions">Terms & Conditions</a>
-            </div>
         </div>
     </footer>
-
-    <div class="modal-backdrop" id="modalBackdrop"></div>
-
-    <div class="modal" id="privacyModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 style="color:#007BFF;">Lost & Found Hub - Privacy Policy</h3>
-          <button class="close-btn">&times;</button>
-        </div>
-        <div class="modal-body">
-              <h4>1. Information We Collect</h4>
-              <p>To provide our lost and found matching services, we collect:
-                  <ul>
-                      <li>Account information (name, email, contact details)</li>
-                      <li>Item descriptions and photos you choose to share</li>
-                      <li>Location data to help match lost and found items geographically</li>
-                      <li>Communication history between users regarding items</li>
-                      <li>Technical data (IP address, browser type, device information)</li>
-                  </ul>
-              </p>
-              
-              <h4>2. How We Use Your Information</h4>
-              <p>We use collected information to:
-                  <ul>
-                      <li>Match lost items with found items in your area</li>
-                      <li>Facilitate communication between users</li>
-                      <li>Improve our matching algorithms and user experience</li>
-                      <li>Send notifications about potential matches</li>
-                      <li>Ensure platform security and prevent fraud</li>
-                      <li>Comply with legal obligations</li>
-                  </ul>
-              </p>
-              
-              <h4>3. Item Information Sharing</h4>
-              <p>To help reunite items with their owners, we may share:
-                  <ul>
-                      <li>Item descriptions and photos with other users in your area</li>
-                      <li>General location data (neighborhood/city level, not exact addresses)</li>
-                      <li>Contact method you choose to share (platform messaging or provided contact info)</li>
-                  </ul>
-                  We never share your exact address, phone number, or personal financial information without your explicit consent.
-              </p>
-              
-              <h4>4. Data Security</h4>
-              <p>We implement security measures to protect your information:
-                  <ul>
-                      <li>Encryption of sensitive data in transit and at rest</li>
-                      <li>Regular security assessments and updates</li>
-                      <li>Limited employee access to user data</li>
-                      <li>Secure authentication procedures</li>
-                  </ul>
-              </p>
-              
-              <h4>5. Your Privacy Choices</h4>
-              <p>You can:
-                  <ul>
-                      <li>Adjust visibility settings for your listings</li>
-                      <li>Choose which contact methods to share</li>
-                      <li>Delete your account and associated data</li>
-                      <li>Opt-out of non-essential communications</li>
-                      <li>Request access to your personal data</li>
-                  </ul>
-              </p>
-              
-              <h4>6. Location Data</h4>
-              <p>We use location information to:
-                  <ul>
-                      <li>Show relevant lost and found items in your area</li>
-                      <li>Improve matching accuracy</li>
-                      <li>Provide location-based notifications</li>
-                  </ul>
-                  You can control location sharing through your device settings and our app permissions.
-              </p>
-              
-              <h4>7. Data Retention</h4>
-              <p>We retain your information:
-                  <ul>
-                      <li>While your account is active</li>
-                      <li>For resolved item listings: 90 days after resolution</li>
-                      <li>For unresolved listings: Until you delete them or 1 year</li>
-                      <li>As required by law for legal compliance</li>
-                  </ul>
-              </p>
-              
-              <h4>8. Changes to Privacy Policy</h4>
-              <p>We will notify users of significant changes to our privacy practices. Continued use of Lost & Found Hub after changes constitutes acceptance of the updated policy.</p>
-              
-              <h4>9. Contact Us</h4>
-              <p>For privacy-related questions or concerns, please contact our privacy team at privacy@lostfoundhub.com</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal" id="serviceModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 style="color: #007BFF;">Lost & Found Hub - Terms of Service</h3>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <h4>1. Our Service</h4>
-                <p>Welcome to Lost & Found Hub. Our service provides a platform to help users post and search for lost and found items within a specific community. We aim to facilitate the return of belongings but do not participate in the exchange or guarantee outcomes.</p>
-                <h4>2. User Accounts</h4>
-                <p>To post an item, you may be required to create an account. You agree to provide truthful information and are responsible for maintaining the confidentiality of your account password. You are solely responsible for all activities that occur under your account.</p>
-                <h4>3. Acceptable Use Policy</h4>
-                <p>You agree not to use the service to post false or misleading information, harass other users, or post unlawful content.</p>
-                <h4>4. User-Generated Content</h4>
-                <p>You retain ownership of the content you post. However, by posting, you grant Lost & Found Hub a license to display that content on our platform for the purpose of operating the service.</p>
-                <h4>5. Termination</h4>
-                <p>We reserve the right to suspend or terminate your access to the service at our discretion for any conduct that violates these terms.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="termsModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Lost & Found Hub - Terms & Conditions</h3>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <h4>1. Acceptance of Terms</h4>
-                <p>By accessing and using Lost & Found Hub, you accept and agree to be bound by these Terms & Conditions. Our platform connects people who have lost items with those who have found them.</p>
-                
-                <h4>2. User Responsibilities</h4>
-                <p>As a user of Lost & Found Hub, you agree to:
-                    <ul>
-                        <li>Provide accurate information about lost or found items</li>
-                        <li>Respond promptly to legitimate inquiries about your listings</li>
-                        <li>Treat other users with respect and courtesy</li>
-                        <li>Not list prohibited or illegal items</li>
-                        <li>Verify ownership before returning found items</li>
-                    </ul>
-                </p>
-                
-                <h4>3. Item Listings and Verification</h4>
-                <p>Lost & Found Hub serves as a connection platform only. We do not:
-                    <ul>
-                        <li>Verify the accuracy of user listings</li>
-                        <li>Guarantee the return of lost items</li>
-                        <li>Take possession of any lost or found items</li>
-                        <li>Mediate disputes between users</li>
-                    </ul>
-                    Users are responsible for verifying ownership through reasonable means before transferring items.
-                </p>
-                
-                <h4>4. Prohibited Items</h4>
-                <p>You may not list the following items on our platform:
-                    <ul>
-                        <li>Weapons, firearms, or ammunition</li>
-                        <li>Illegal substances or drugs</li>
-                        <li>Hazardous materials</li>
-                        <li>Stolen property</li>
-                        <li>Perishable items</li>
-                        <li>Animals or pets</li>
-                    </ul>
-                </p>
-                
-                <h4>5. Safe Exchange Guidelines</h4>
-                <p>For your safety, we recommend:
-                    <ul>
-                        <li>Meeting in public, well-lit areas</li>
-                        <li>Bringing a friend or family member</li>
-                        <li>Verifying the item matches the description</li>
-                        <li>Not sharing personal financial information</li>
-                        <li>Reporting suspicious activity to local authorities</li>
-                    </ul>
-                </p>
-                
-                <h4>6. Limitation of Liability</h4>
-                <p>Lost & Found Hub is not responsible for:
-                    <ul>
-                        <li>Items that are not returned or claimed</li>
-                        <li>Misrepresentation of items by users</li>
-                        <li>User interactions or exchanges</li>
-                        <li>Damages or losses resulting from platform use</li>
-                        <li>Technical issues that may temporarily limit access</li>
-                    </ul>
-                </p>
-                
-                <h4>7. Account Termination</h4>
-                <p>We reserve the right to suspend or terminate accounts that:
-                    <ul>
-                        <li>Violate these terms and conditions</li>
-                        <li>Engage in fraudulent or suspicious activity</li>
-                        <li>Harass other users</li>
-                        <li>Repeatedly post inaccurate information</li>
-                    </ul>
-                </p>
-                
-                <h4>8. Changes to Terms</h4>
-                <p>We may update these Terms & Conditions periodically. Continued use of Lost & Found Hub after changes constitutes acceptance of the modified terms.</p>
-            </div>
-        </div>
-    </div>
 
     <div class="success-modal-backdrop" id="successModal">
         <div class="success-modal">
             <div class="success-icon">
                 <i class="fas fa-check"></i>
             </div>
-            <h2>Submitted!</h2>
-            <p>Our coordinator will contact you.</p>
+            <h2>Submitted Successfully!</h2>
+            <p>Your item has been saved to database and admin has been notified.</p>
             <button class="success-button" id="successButton">OK</button>
         </div>
     </div>
 
     <script>
-        // Initialize EmailJS with your public key
-        (function() {
-            // **IMPORTANT**: Replace with your actual EmailJS public key
-            emailjs.init("ieCJeX-5LsiuaA20c"); 
-        })();
+        // Initialize EmailJS
+        emailjs.init("ieCJeX-5LsiuaA20c");
 
-        // Toggle account dropdown
-        document.getElementById('accountIcon').addEventListener('click', function() {
-            document.getElementById('accountDropdown').classList.toggle('active');
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const accountSection = document.getElementById('accountSection');
-            if (!accountSection.contains(event.target)) {
-                document.getElementById('accountDropdown').classList.remove('active');
+        // Image preview functionality
+        document.getElementById('itemImage').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagePreview');
+            const previewImage = document.getElementById('previewImage');
+            
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
             }
         });
 
-        // Mobile menu toggle
-        document.getElementById('hamburgerMenu').addEventListener('click', function() {
-            document.getElementById('mainNav').classList.toggle('active');
+        // Remove image functionality
+        document.getElementById('removeImage').addEventListener('click', function() {
+            document.getElementById('itemImage').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
         });
 
-        // Form validation and success modal
-        document.getElementById('itemForm').addEventListener('submit', function(event) {
+        // Form submission handler
+        document.getElementById('itemForm').addEventListener('submit', async function(event) {
             event.preventDefault();
+            
+            // Validate form
+            if (!validateForm()) {
+                return;
+            }
+
+            // Show loading spinner
+            document.getElementById('loadingSpinner').style.display = 'block';
+
+            try {
+                // Get form data
+                const formData = new FormData();
+                formData.append('itemType', document.querySelector('input[name="itemType"]:checked').value);
+                formData.append('itemName', document.getElementById('itemName').value.trim());
+                formData.append('category', document.getElementById('category').value);
+                formData.append('description', document.getElementById('description').value.trim());
+                formData.append('location', document.getElementById('location').value.trim());
+                formData.append('date', document.getElementById('date').value);
+                formData.append('contactEmail', document.getElementById('contactEmail').value.trim());
+                formData.append('contactPhone', document.getElementById('contactPhone').value.trim());
+                
+                // Append image file if selected
+                const imageFile = document.getElementById('itemImage').files[0];
+                if (imageFile) {
+                    formData.append('itemImage', imageFile);
+                }
+
+                console.log('Submitting to database with form data...');
+
+                // Get auth token
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    throw new Error('Please login to submit an item');
+                }
+
+                // Save to database with image
+                const dbResponse = await fetch('http://localhost:3000/api/items', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                        // Don't set Content-Type for FormData, let browser set it with boundary
+                    },
+                    body: formData
+                });
+
+                const dbResult = await dbResponse.json();
+                
+                if (!dbResult.success) {
+                    throw new Error('Database error: ' + dbResult.message);
+                }
+
+                console.log('Database save successful:', dbResult);
+
+                // Send email notification
+                console.log('Sending email notification...');
+                const emailData = {
+                    itemType: document.querySelector('input[name="itemType"]:checked').value,
+                    itemName: document.getElementById('itemName').value.trim(),
+                    category: document.getElementById('category').value,
+                    description: document.getElementById('description').value.trim(),
+                    location: document.getElementById('location').value.trim(),
+                    date: document.getElementById('date').value,
+                    contactEmail: document.getElementById('contactEmail').value.trim(),
+                    contactPhone: document.getElementById('contactPhone').value.trim(),
+                    timestamp: new Date().toLocaleString(),
+                    hasImage: !!imageFile
+                };
+
+                const emailResult = await emailjs.send('service_csp5v7g', 'template_ye5sd7p', emailData);
+                console.log('Email sent successfully:', emailResult);
+
+                // Hide loading spinner
+                document.getElementById('loadingSpinner').style.display = 'none';
+
+                // Show success modal
+                document.getElementById('successModal').style.display = 'flex';
+
+                // Reset form
+                document.getElementById('itemForm').reset();
+                document.getElementById('imagePreview').style.display = 'none';
+                document.getElementById('date').valueAsDate = new Date();
+
+            } catch (error) {
+                console.error('Submission error:', error);
+                document.getElementById('loadingSpinner').style.display = 'none';
+                
+                if (error.message.includes('login')) {
+                    alert('Please login to submit an item');
+                    window.location.href = 'login.html';
+                } else {
+                    alert('Error: ' + error.message);
+                }
+            }
+        });
+
+        // Form validation function
+        function validateForm() {
             let isValid = true;
 
-            // Validation logic
-            const itemType = document.querySelector('input[name="itemType"]:checked');
-            const itemName = document.getElementById('itemName').value.trim();
-            const category = document.getElementById('category').value;
-            const description = document.getElementById('description').value.trim();
-            const location = document.getElementById('location').value.trim();
-            const date = document.getElementById('date').value;
-            const email = document.getElementById('contactEmail').value.trim();
-            const phone = document.getElementById('contactphone').value.trim();
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            const phoneRegex = /^\d{10}$/;
+            // Reset error messages
+            document.querySelectorAll('.error-message').forEach(msg => {
+                msg.style.display = 'none';
+            });
 
             // Validate item type
+            const itemType = document.querySelector('input[name="itemType"]:checked');
             if (!itemType) { 
                 document.getElementById('itemType-error').style.display = 'block'; 
                 isValid = false; 
-            } else { 
-                document.getElementById('itemType-error').style.display = 'none'; 
             }
 
             // Validate item name
+            const itemName = document.getElementById('itemName').value.trim();
             if (!itemName) { 
                 document.getElementById('itemName-error').style.display = 'block'; 
                 isValid = false; 
-            } else { 
-                document.getElementById('itemName-error').style.display = 'none'; 
             }
 
             // Validate category
+            const category = document.getElementById('category').value;
             if (!category) { 
                 document.getElementById('category-error').style.display = 'block'; 
                 isValid = false; 
-            } else { 
-                document.getElementById('category-error').style.display = 'none'; 
             }
 
             // Validate description
+            const description = document.getElementById('description').value.trim();
             if (!description) { 
                 document.getElementById('description-error').style.display = 'block'; 
                 isValid = false; 
-            } else { 
-                document.getElementById('description-error').style.display = 'none'; 
             }
 
             // Validate location
+            const location = document.getElementById('location').value.trim();
             if (!location) { 
                 document.getElementById('location-error').style.display = 'block'; 
                 isValid = false; 
-            } else { 
-                document.getElementById('location-error').style.display = 'none'; 
             }
 
             // Validate date
+            const date = document.getElementById('date').value;
             if (!date) { 
                 document.getElementById('date-error').style.display = 'block'; 
                 isValid = false; 
-            } else { 
-                document.getElementById('date-error').style.display = 'none'; 
             }
 
             // Validate email
+            const email = document.getElementById('contactEmail').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!email || !emailRegex.test(email)) { 
                 document.getElementById('contactEmail-error').style.display = 'block'; 
                 isValid = false; 
-            } else { 
-                document.getElementById('contactEmail-error').style.display = 'none'; 
             }
 
             // Validate phone
+            const phone = document.getElementById('contactPhone').value.trim();
+            const phoneRegex = /^\d{10}$/;
             if (!phone || !phoneRegex.test(phone)) { 
-                document.getElementById('contactphone-error').style.display = 'block'; 
+                document.getElementById('contactPhone-error').style.display = 'block'; 
                 isValid = false; 
-            } else { 
-                document.getElementById('contactphone-error').style.display = 'none'; 
             }
 
-            // Show success modal if valid
-            if (isValid) {
-                // Show loading spinner
-                document.getElementById('loadingSpinner').style.display = 'block';
-                
-                // Collect form data
-                const formData = {
-                    itemType: itemType.value,
-                    itemName: itemName,
-                    category: category,
-                    description: description,
-                    location: location,
-                    date: date,
-                    contactEmail: email,
-                    contactPhone: phone,
-                    timestamp: new Date().toLocaleString()
-                };
-                
-                console.log('Sending email with data:', formData);
-
-                // Send email to admin using EmailJS
-                // **IMPORTANT**: Replace with your Service ID and Template ID
-                emailjs.send('service_csp5v7g', 'template_ye5sd7p', formData)
-                    .then(function(response) {
-                        console.log('Email sent successfully!', response.status, response.text);
-                        
-                        // Hide loading spinner
-                        document.getElementById('loadingSpinner').style.display = 'none';
-                        
-                        // Show success modal
-                        const successModal = document.getElementById('successModal');
-                        successModal.style.display = 'flex';
-
-                        // Reset form
-                        document.getElementById('itemForm').reset();
-                        document.getElementById('date').valueAsDate = new Date();
-                    }, function(error) {
-                        console.error('Failed to send email:', error);
-                        
-                        // Hide loading spinner
-                        document.getElementById('loadingSpinner').style.display = 'none';
-                        
-                        // Show detailed error message
-                        if (error.status === 404) {
-                            alert('Email service not found. Please check your EmailJS Service ID and Template ID in the dashboard.');
-                        } else if (error.text && error.text.includes('recipients address is empty')) {
-                            alert('Email configuration error: The recipient email is not set in your EmailJS template. Please set the "To Email" in your EmailJS template.');
-                        } else {
-                            alert('Failed to send email. Error: ' + (error.text || JSON.stringify(error)));
-                        }
-                    });
-            }
-        });
+            return isValid;
+        }
 
         // Close success modal
         document.getElementById('successButton').addEventListener('click', function() {
             document.getElementById('successModal').style.display = 'none';
         });
 
-        // Set today's date as default and max
-        const today = new Date().toISOString().split('T')[0];
-        const dateInput = document.getElementById('date');
-        dateInput.max = today;
-        dateInput.value = today;
+        // Set today's date as default
+        document.getElementById('date').valueAsDate = new Date();
 
-        // Modal functionality for footer links
+        // Check if user is logged in
         document.addEventListener('DOMContentLoaded', function() {
-            const modalBackdrop = document.getElementById('modalBackdrop');
-            const privacyModal = document.getElementById('privacyModal');
-            const serviceModal = document.getElementById('serviceModal');
-            const termsModal = document.getElementById('termsModal');
-            const privacyLink = document.getElementById('privacyLink');
-            const serviceLink = document.getElementById('serviceLink');
-            const termsLink = document.getElementById('termsLink');
-
-            // Open modal functions
-            function openModal(modal) {
-                modalBackdrop.style.display = 'block';
-                modal.style.display = 'block';
-                document.body.classList.add('modal-open');
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                alert('Please login to submit an item');
+                window.location.href = 'login.html';
             }
-
-            function closeModals() {
-                modalBackdrop.style.display = 'none';
-                privacyModal.style.display = 'none';
-                serviceModal.style.display = 'none';
-                termsModal.style.display = 'none';
-                document.body.classList.remove('modal-open');
-            }
-
-            // Event listeners for footer links
-            privacyLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                openModal(privacyModal);
-            });
-
-            serviceLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                openModal(serviceModal);
-            });
-
-            termsLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                openModal(termsModal);
-            });
-
-            // Close modals
-            modalBackdrop.addEventListener('click', closeModals);
-            
-            document.querySelectorAll('.close-btn').forEach(btn => {
-                btn.addEventListener('click', closeModals);
-            });
-
-            // Close with Escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeModals();
-                }
-            });
         });
     </script>
 </body>

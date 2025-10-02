@@ -49,14 +49,111 @@
         .dropdown-content:hover {
             display: block;
         }
+
+        /* Avatar styles for header */
+        .account-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            overflow: hidden;
+            position: relative;
+            border-radius: 50%;
+            border: 3px solid #007BFF;
+        }
+        
+        .account-icon img {
+            
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            
+        }
+        
+        .account-icon .fa-user {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-0%, -50%);
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            display: block;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            overflow: hidden;
+            position: relative;
+            border-radius: 50%;
+            border: 3px solid #007BFF;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+            
+        }
+        
+        .user-avatar .fa-user {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Welcome message styles */
+        .welcome-message {
+            display: none;
+            margin-left: 25px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007BFF;
+            padding: 5px 0;
+        }
+
+        .welcome-message.active {
+            display: block;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .welcome-message {
+                font-size: 0.9rem;
+                margin-left: 10px;
+            }
+        }
     </style>
 </head>
 <body>
     <header>
         <div class="container header-content">
-            <div class="logo">
-                <i class="fas fa-search-location" style="color: #007BFF;"></i>
-                <a href="index.html"><span>Lost & Found Hub</span></a>
+            <div class="logo-container">
+                <div class="logo">
+                    <i class="fas fa-search-location" style="color: #007BFF;"></i>
+                    <a href="index.html"><span>Lost & Found Hub</span></a>
+                </div>
+                <div class="welcome-message" id="welcomeMessage">
+                    <!-- Welcome message will be inserted here dynamically -->
+                </div>
             </div>
             <nav id="mainNav">
                 <ul>
@@ -76,12 +173,14 @@
             </nav>
             <div class="account-section" id="accountSection" style="display: none;">
                 <div class="account-icon" id="accountIcon">
-                    <i class="fas fa-user"></i>
+                    <i class="fas fa-user" id="accountIconFallback"></i>
+                    <img id="accountIconImage" alt="User Avatar">
                 </div>
                 <div class="dropdown" id="accountDropdown">
                     <div class="user-info">
                         <div class="user-avatar">
-                            <i class="fas fa-user"></i>
+                            <i class="fas fa-user" id="dropdownAvatarFallback"></i>
+                            <img id="dropdownAvatarImage" alt="User Avatar">
                         </div>
                         <div class="user-details">
                             <h3 id="username">Username</h3>
@@ -553,6 +652,42 @@
             const dropdownUsername = document.getElementById('username');
             const dropdownUserEmail = document.getElementById('useremail');
             const logoutButton = document.getElementById('logoutBtn');
+            const accountIconImage = document.getElementById('accountIconImage');
+            const accountIconFallback = document.getElementById('accountIconFallback');
+            const dropdownAvatarImage = document.getElementById('dropdownAvatarImage');
+            const dropdownAvatarFallback = document.getElementById('dropdownAvatarFallback');
+            const welcomeMessage = document.getElementById('welcomeMessage');
+
+            // Function to update avatars in header
+            function updateHeaderAvatars(avatarUrl) {
+                if (avatarUrl && avatarUrl !== '') {
+                    // Update account icon
+                    accountIconImage.src = avatarUrl;
+                    accountIconImage.style.display = 'block';
+                    accountIconFallback.style.display = 'none';
+                    
+                    // Update dropdown avatar
+                    dropdownAvatarImage.src = avatarUrl;
+                    dropdownAvatarImage.style.display = 'block';
+                    dropdownAvatarFallback.style.display = 'none';
+                } else {
+                    // Show fallback icons if no avatar
+                    accountIconImage.style.display = 'none';
+                    accountIconFallback.style.display = 'block';
+                    dropdownAvatarImage.style.display = 'none';
+                    dropdownAvatarFallback.style.display = 'block';
+                }
+            }
+
+            // Function to update welcome message
+            function updateWelcomeMessage(username) {
+                if (username && username !== '') {
+                    welcomeMessage.textContent = `Welcome, ${username}`;
+                    welcomeMessage.classList.add('active');
+                } else {
+                    welcomeMessage.classList.remove('active');
+                }
+            }
 
             // --- Dropdown Logic ---
             accountIcon.addEventListener('click', e => { e.stopPropagation(); accountDropdown.classList.toggle('active'); });
@@ -572,39 +707,81 @@
                         accountSection.style.display = 'block';
                         navSubmitItem.href = 'submit-item.html';
                         document.getElementById('dropdownSubmitItem').href = 'submit-item.html';
-                        dropdownUsername.textContent = user.displayName || user.email.split('@')[0];
+                        const username = user.displayName || user.email.split('@')[0];
+                        dropdownUsername.textContent = username;
                         dropdownUserEmail.textContent = user.email;
+                        updateWelcomeMessage(username);
                     } else {
                         accountSection.style.display = 'none';
                         navSubmitItem.href = 'login.html';
                         document.getElementById('dropdownSubmitItem').href = 'login.html';
+                        updateWelcomeMessage('');
                     }
                 });
-            } else accountSection.style.display = 'block';
+            } else {
+                accountSection.style.display = 'block';
+            }
 
             // --- Logout ---
             logoutButton.addEventListener('click', async (e) => {
                 e.preventDefault();
                 accountDropdown.classList.remove('active');
-                if (auth) { try { await signOut(auth); window.location.href = 'index.html'; } catch (err) { console.error(err); } }
+
+                try {
+                    if (auth) {
+                        await signOut(auth); // Firebase sign out
+                    }
+                } catch (err) {
+                    console.error("Logout error:", err);
+                } finally {
+                    // Always redirect to login.html after logout
+                    window.location.href = 'login.html';
+                }
             });
 
             // --- Fetch Profile ---
             async function fetchProfile() {
                 try {
-                    const token = "YOUR_JWT_TOKEN_HERE"; // Replace with your token
+                    const token = localStorage.getItem("authToken");
+                    if (!token) {
+                        console.log("No auth token found");
+                        return;
+                    }
+                    
                     const res = await fetch("http://localhost:3000/api/profile", {
                         method: "GET",
-                        headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }
+                        headers: { 
+                            "Authorization": `Bearer ${token}`, 
+                            "Content-Type": "application/json" 
+                        }
                     });
+                    
                     const result = await res.json();
                     if (result.success) {
                         const user = result.user;
-                        dropdownUsername.textContent = user.username || user.name || "No Name";
+                        const username = user.username || user.name || "No Name";
+                        dropdownUsername.textContent = username;
                         dropdownUserEmail.textContent = user.email;
-                    } else console.error(result.message);
-                } catch (err) { console.error("Profile fetch failed:", err); }
+                        
+                        // Update welcome message
+                        updateWelcomeMessage(username);
+                        
+                        // Update avatars if available
+                        if (user.avatar) {
+                            updateHeaderAvatars(user.avatar);
+                        } else {
+                            // Use default avatar
+                            updateHeaderAvatars('https://i.pravatar.cc/150?img=12');
+                        }
+                    } else {
+                        console.error(result.message);
+                    }
+                } catch (err) { 
+                    console.error("Profile fetch failed:", err); 
+                }
             }
+            
+            // Load profile on page load
             fetchProfile();
 
             // --- Item Demo & Filtering ---
@@ -617,18 +794,68 @@
                 { id: 4, type: 'Found', category: 'Wallets', title: 'Brown Leather Wallet', description: 'Found near parking lot. Contains credit cards.', date: '2025-09-23', location: 'Parking Lot B' }
             ];
 
-            function getItemIcon(category) { const icons = { 'Electronics':'mobile-alt','ID Cards':'id-card','Wallets':'wallet','Books':'book','Clothing':'tshirt','Keys':'key' }; return icons[category]||'question-circle'; }
-            function displayItems(items) { itemListings.innerHTML=''; noItemsMessage.style.display=items.length===0?'block':'none'; items.forEach(item => { const card = document.createElement('div'); card.className='item-card'; card.innerHTML=`<div class="item-image"><i class="fas fa-${getItemIcon(item.category)} fa-3x"></i></div><div class="item-details"><span class="item-type ${item.type.toLowerCase()}">${item.type}</span><h3>${item.title}</h3><p>${item.description}</p><div class="item-meta"><span><i class="fas fa-calendar-alt"></i> ${item.date}</span><span><i class="fas fa-map-marker-alt"></i> ${item.location}</span></div></div>`; itemListings.appendChild(card); }); }
+            function getItemIcon(category) { 
+                const icons = { 
+                    'Electronics':'mobile-alt',
+                    'ID Cards':'id-card',
+                    'Wallets':'wallet',
+                    'Books':'book',
+                    'Clothing':'tshirt',
+                    'Keys':'key' 
+                }; 
+                return icons[category]||'question-circle'; 
+            }
+            
+            function displayItems(items) { 
+                itemListings.innerHTML=''; 
+                noItemsMessage.style.display=items.length===0?'block':'none'; 
+                items.forEach(item => { 
+                    const card = document.createElement('div'); 
+                    card.className='item-card'; 
+                    card.innerHTML=`
+                        <div class="item-image">
+                            <i class="fas fa-${getItemIcon(item.category)} fa-3x"></i>
+                        </div>
+                        <div class="item-details">
+                            <span class="item-type ${item.type.toLowerCase()}">${item.type}</span>
+                            <h3>${item.title}</h3>
+                            <p>${item.description}</p>
+                            <div class="item-meta">
+                                <span><i class="fas fa-calendar-alt"></i> ${item.date}</span>
+                                <span><i class="fas fa-map-marker-alt"></i> ${item.location}</span>
+                            </div>
+                        </div>
+                    `; 
+                    itemListings.appendChild(card); 
+                }); 
+            }
+            
             function filterItems() {
                 const searchTerm = document.getElementById('searchKeyword').value.toLowerCase();
                 const typeFilter = document.getElementById('itemTypeFilter').value;
                 const categoryFilter = document.getElementById('categoryFilter').value;
-                const filteredItems = sampleItems.filter(item => (item.title.toLowerCase().includes(searchTerm)||item.description.toLowerCase().includes(searchTerm))&&(typeFilter===''||item.type===typeFilter)&&(categoryFilter===''||item.category===categoryFilter));
+                const filteredItems = sampleItems.filter(item => 
+                    (item.title.toLowerCase().includes(searchTerm)||item.description.toLowerCase().includes(searchTerm))&&
+                    (typeFilter===''||item.type===typeFilter)&&
+                    (categoryFilter===''||item.category===categoryFilter)
+                );
                 displayItems(filteredItems);
             }
-            setTimeout(()=>{ displayItems(sampleItems); document.getElementById('totalItemsCount').textContent=sampleItems.length; document.getElementById('claimedItemsCount').textContent=Math.floor(sampleItems.length*0.7); document.getElementById('resolvedItemsCount').textContent=Math.floor(sampleItems.length*0.5); },1000);
+            
+            setTimeout(()=>{ 
+                displayItems(sampleItems); 
+                document.getElementById('totalItemsCount').textContent=sampleItems.length; 
+                document.getElementById('claimedItemsCount').textContent=Math.floor(sampleItems.length*0.7); 
+                document.getElementById('resolvedItemsCount').textContent=Math.floor(sampleItems.length*0.5); 
+            },1000);
+            
             document.getElementById('searchBtn').addEventListener('click', filterItems);
-            document.getElementById('resetFiltersBtn').addEventListener('click',()=>{ document.getElementById('searchKeyword').value=''; document.getElementById('itemTypeFilter').value=''; document.getElementById('categoryFilter').value=''; displayItems(sampleItems); });
+            document.getElementById('resetFiltersBtn').addEventListener('click',()=>{ 
+                document.getElementById('searchKeyword').value=''; 
+                document.getElementById('itemTypeFilter').value=''; 
+                document.getElementById('categoryFilter').value=''; 
+                displayItems(sampleItems); 
+            });
 
             // --- Modals ---
             const modalBackdrop=document.getElementById('modalBackdrop');

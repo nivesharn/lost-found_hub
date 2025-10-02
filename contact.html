@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us | Lost & Found Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         /* General Styling */
         :root {
@@ -121,6 +123,23 @@
             justify-content: center;
             cursor: pointer;
             transition: background-color 0.3s;
+            overflow: hidden;
+            position: relative;
+            border: 3px solid #007BFF;
+        }
+        
+        .account-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+        
+        .account-icon .fa-user {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
         
         .account-icon:hover {
@@ -169,6 +188,23 @@
             color: white;
             font-size: 1.2rem;
             margin-right: 15px;
+            overflow: hidden;
+            position: relative;
+            border: 3px solid #007BFF;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+        
+        .user-avatar .fa-user {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
         
         .user-details h3 {
@@ -328,6 +364,12 @@
             transform: translateY(-2px);
         }
 
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         /* Form Styling */
         .form-group {
             margin-bottom: 20px;
@@ -402,7 +444,56 @@
             height: 400px;
             border: 1px solid var(--border-color);
         }
-        
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notification.success {
+            background-color: #4CAF50;
+        }
+
+        .notification.error {
+            background-color: #e74c3c;
+        }
+
+        .notification.info {
+            background-color: #3498db;
+        }
+
+        .notification.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* Responsive */
         @media (max-width: 992px) {
             .contact-grid {
@@ -452,11 +543,15 @@
             </nav>
             <div class="account-section" id="accountSection">
                 <div class="account-icon" id="accountIcon">
-                    <i class="fas fa-user"></i>
+                    <i class="fas fa-user" id="accountIconFallback"></i>
+                    <img id="accountIconImage" alt="User Avatar">
                 </div>
                 <div class="dropdown" id="accountDropdown">
                     <div class="dropdown-user-info">
-                        <div class="user-avatar"><i class="fas fa-user"></i></div>
+                        <div class="user-avatar">
+                            <i class="fas fa-user" id="dropdownAvatarFallback"></i>
+                            <img id="dropdownAvatarImage" alt="User Avatar">
+                        </div>
                         <div class="user-details">
                             <h3 id="username">nivesharm</h3>
                             <p id="useremail">nivesharm@example.com</p>
@@ -467,7 +562,6 @@
                         <li><a href="submit-item.html" id="navSubmitItem" aria-label="Submit Item"><i class="fas fa-plus-circle"></i> Submit Item</a></li>
                         <li><a href="help.html"><i class="fas fa-question-circle"></i> Help & Support</a></li>
                         <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
-                        <!-- <li><a href="contact.html" aria-label="Home"><i class="fas fa-phone contact-icons"></i> Contact</a></li> -->
                         <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
                         <li><a href="login.html" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                     </ul>
@@ -488,19 +582,19 @@
                 <ul class="contact-info-list">
                     <li>
                         <i class="fas fa-map-marker-alt"></i>
-                        <div><strong>Address:</strong><br>123 College Avenue, Campus Central, ST 12345</div>
+                        <div><strong>Address:</strong><br>Karunya Institute of technology and sciences</div>
                     </li>
                     <li>
                         <i class="fas fa-phone-alt"></i>
-                        <div><strong>Phone:</strong><br>(123) 456-7890</div>
+                        <div><strong>Phone:</strong><br>+91 1234567890</div>
                     </li>
                     <li>
                         <i class="fas fa-envelope"></i>
-                        <div><strong>Official Email:</strong><br>support@lostfoundhub.edu</div>
+                        <div><strong>Official Email:</strong><br>contactlostnfound.1@gmail.com</div>
                     </li>
                     <li>
                         <i class="fas fa-clock"></i>
-                        <div><strong>Business Hours:</strong><br>Mon - Fri: 9:00 AM - 5:00 PM</div>
+                        <div><strong>Business Hours:</strong><br>Mon - Fri: 9:00 AM - 5:00 PM <span style="color: red;"><br>Weekends: Closed</span></div>
                     </li>
                 </ul>
                 <div class="social-links">
@@ -513,7 +607,7 @@
             <div class="contact-form-map">
                 <div class="card">
                     <h2>Send Us a Message 📝</h2>
-                    <form action="#" method="post">
+                    <form id="contactForm" method="post">
                         <div class="form-group">
                             <label for="name">Your Name</label>
                             <input type="text" id="name" name="name" required>
@@ -530,19 +624,22 @@
                             <label for="message">Message</label>
                             <textarea id="message" name="message" rows="5" required></textarea>
                         </div>
-                        <button type="submit" class="btn">Send Message</button>
+                        <button type="submit" class="btn" id="submitBtn">
+                            Send Message
+                        </button>
                     </form>
                 </div>
                 <div class="card">
                     <h2>Our Location 📍</h2>
                     <div class="map-container">
                         <iframe 
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.0864388832633!2d144.9537353159042!3d-37.81701994202154!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad65d4c2b349649%3A0xb6899234e561db11!2sFederation%20Square!5e0!3m2!1sen!2sau!4v1617862 Federation Square" 
-                            width="100%" 
-                            height="100%" 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3910.62484477507!2d76.744061!3d10.936164!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba866bd6aaaaaab%3A0xc650b8a75e7b51f0!2sKarunya%20Institute%20of%20Technology%20and%20Sciences%20(Deemed%20University)!5e0!3m2!1sen!2sin!4v1696249900000!5m2!1sen!2sin" 
+                            width="600" 
+                            height="450" 
                             style="border:0;" 
                             allowfullscreen="" 
-                            loading="lazy">
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
                         </iframe>
                     </div>
                 </div>
@@ -557,7 +654,96 @@
         </div>
     </footer>
 
+    <!-- Notification Element -->
+    <div id="notification" class="notification hidden">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText">Message sent successfully!</span>
+    </div>
+
     <script>
+        // Initialize EmailJS with your public key
+        (function() {
+            // Replace with your actual EmailJS public key
+            emailjs.init("qHgQxYjQRiSUT8PG1");
+        })();
+
+        // Function to update avatars in header
+        function updateHeaderAvatars(avatarUrl) {
+            const accountIconImage = document.getElementById('accountIconImage');
+            const accountIconFallback = document.getElementById('accountIconFallback');
+            const dropdownAvatarImage = document.getElementById('dropdownAvatarImage');
+            const dropdownAvatarFallback = document.getElementById('dropdownAvatarFallback');
+            
+            if (avatarUrl && avatarUrl !== '') {
+                // Update account icon
+                accountIconImage.src = avatarUrl;
+                accountIconImage.style.display = 'block';
+                accountIconFallback.style.display = 'none';
+                
+                // Update dropdown avatar
+                dropdownAvatarImage.src = avatarUrl;
+                dropdownAvatarImage.style.display = 'block';
+                dropdownAvatarFallback.style.display = 'none';
+            } else {
+                // Show fallback icons if no avatar
+                accountIconImage.style.display = 'none';
+                accountIconFallback.style.display = 'block';
+                dropdownAvatarImage.style.display = 'none';
+                dropdownAvatarFallback.style.display = 'block';
+            }
+        }
+
+        // Function to update user info
+        function updateUserInfo(username, email) {
+            const usernameElement = document.getElementById('username');
+            const useremailElement = document.getElementById('useremail');
+            
+            if (username) {
+                usernameElement.textContent = username;
+            }
+            
+            if (email) {
+                useremailElement.textContent = email;
+            }
+        }
+
+        // Function to fetch user profile
+        async function fetchProfile() {
+            try {
+                const token = localStorage.getItem("authToken");
+                if (!token) {
+                    console.log("No auth token found");
+                    return;
+                }
+                
+                const res = await fetch("http://localhost:3000/api/profile", {
+                    method: "GET",
+                    headers: { 
+                        "Authorization": `Bearer ${token}`, 
+                        "Content-Type": "application/json" 
+                    }
+                });
+                
+                const result = await res.json();
+                if (result.success) {
+                    const user = result.user;
+                    updateUserInfo(user.username || user.name, user.email);
+                    
+                    // Update avatars if available
+                    if (user.avatar) {
+                        updateHeaderAvatars(user.avatar);
+                    } else {
+                        // Use default avatar
+                        updateHeaderAvatars('https://i.pravatar.cc/150?img=12');
+                    }
+                } else {
+                    console.error(result.message);
+                }
+            } catch (err) { 
+                console.error("Profile fetch failed:", err); 
+            }
+        }
+
         // Toggle account dropdown
         document.getElementById('accountIcon').addEventListener('click', function(e) {
             e.stopPropagation();
@@ -577,11 +763,113 @@
             document.getElementById('mainNav').classList.toggle('active');
         });
 
-        // Form submission
-        document.querySelector('form').addEventListener('submit', function(e) {
+        // Logout functionality
+        document.querySelector('.logout-btn').addEventListener('click', function(e) {
             e.preventDefault();
-            alert('Thank you for your message! We will get back to you soon.');
-            this.reset();
+            // Clear any stored authentication data
+            localStorage.removeItem('authToken');
+            // Redirect to login page
+            window.location.href = 'login.html';
+        });
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            const notificationIcon = notification.querySelector('i');
+            
+            // Set notification content and style
+            notificationText.textContent = message;
+            notification.className = `notification ${type}`;
+            
+            // Set appropriate icon
+            if (type === 'success') {
+                notificationIcon.className = 'fas fa-check-circle';
+            } else if (type === 'error') {
+                notificationIcon.className = 'fas fa-exclamation-circle';
+            } else {
+                notificationIcon.className = 'fas fa-info-circle';
+            }
+            
+            // Show notification
+            notification.classList.remove('hidden');
+            
+            // Hide notification after 5 seconds
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Form submission with EmailJS
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span> Sending...';
+            
+            // Get current date
+            const now = new Date();
+            const formattedDate = now.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            // Get form data
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                subject: document.getElementById('subject').value,
+                message: document.getElementById('message').value,
+                date: formattedDate,
+                to_email: 'contactlostnfound.1@gmail.com'
+            };
+            
+            // Send email using EmailJS
+            // Replace with your actual Service ID and Template ID
+            emailjs.send('service_jcln1zo', 'template_b7s5j1h', formData)
+                .then(function(response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    
+                    // Show success notification
+                    showNotification('Thank you for your message! We will get back to you soon.', 'success');
+                    
+                    // Reset form
+                    document.getElementById('contactForm').reset();
+                    
+                    // Reset button
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }, function(error) {
+                    console.log('FAILED...', error);
+                    
+                    // Show error notification
+                    showNotification('Sorry, there was an error sending your message. Please try again.', 'error');
+                    
+                    // Reset button
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                });
+        });
+
+        // Load user profile on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchProfile();
+            
+            // Check if user is logged in (you can modify this based on your auth system)
+            const token = localStorage.getItem("authToken");
+            if (!token) {
+                // If not logged in, hide account section or redirect to login
+                document.getElementById('accountSection').style.display = 'none';
+            } else {
+                document.getElementById('accountSection').style.display = 'block';
+            }
         });
     </script>
 </body>

@@ -122,6 +122,23 @@
             justify-content: center;
             cursor: pointer;
             transition: background-color 0.3s;
+            overflow: hidden;
+            position: relative;
+            border: 3px solid #007BFF;
+        }
+        
+        .account-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+        
+        .account-icon .fa-user {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
         
         .account-icon:hover {
@@ -170,6 +187,23 @@
             color: white;
             font-size: 1.2rem;
             margin-right: 15px;
+            overflow: hidden;
+            position: relative;
+            border: 3px solid #007BFF;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+        
+        .user-avatar .fa-user {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
         
         .user-details h3 {
@@ -446,16 +480,20 @@
             <nav id="mainNav">
                 <ul>
                 <li><a href="index.html" aria-label="Home"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="contact.html" aria-label="Contact"><i class="fas fa-phone contact-icons"></i> Contact</a></li>
+                <!-- <li><a href="contact.html" aria-label="Contact"><i class="fas fa-phone contact-icons"></i> Contact</a></li> -->
                 </ul>
             </nav>
          <div class="account-section" id="accountSection">
                 <div class="account-icon" id="accountIcon">
-                    <i class="fas fa-user"></i>
+                    <i class="fas fa-user" id="accountIconFallback"></i>
+                    <img id="accountIconImage" alt="User Avatar">
                 </div>
                 <div class="dropdown" id="accountDropdown">
                     <div class="dropdown-user-info">
-                        <div class="user-avatar"><i class="fas fa-user"></i></div>
+                        <div class="user-avatar">
+                            <i class="fas fa-user" id="dropdownAvatarFallback"></i>
+                            <img id="dropdownAvatarImage" alt="User Avatar">
+                        </div>
                         <div class="user-details">
                             <h3 id="username">nivesharm</h3>
                             <p id="useremail">nivesharm@example.com</p>
@@ -491,7 +529,7 @@
                 <i class="fas fa-book-open"></i>
                 <h3>Knowledge Base</h3>
             </a>
-            <a href="#contact-support" class="quick-link-card">
+            <a href="contact.html" class="quick-link-card">
                 <i class="fas fa-headset"></i>
                 <h3>Contact Support</h3>
             </a>
@@ -536,39 +574,6 @@
                 </a>
             </div>
         </section>
-
-        <section id="contact-support" class="card">
-            <h2>Still Need Help?</h2>
-            <p>If you can't find the answer, submit a support ticket below or contact us directly.</p>
-            <p><i class="fas fa-envelope"></i> <strong>Support Email:</strong> support@lostfoundhub.edu</p>
-            <p><i class="fas fa-phone-alt"></i> <strong>Support Phone:</strong> (123) 456-7891 (Mon-Fri, 9am-5pm)</p>
-            
-            <h3 style="margin-top:30px;">Submit a Support Ticket</h3>
-            <form action="#" method="post">
-                <div class="form-group">
-                    <label for="support-name">Your Name</label>
-                    <input type="text" id="support-name" name="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="support-email">Your Email</label>
-                    <input type="email" id="support-email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="support-category">Inquiry Category</label>
-                    <select id="support-category" name="category" class="form-group">
-                        <option value="technical">Technical Issue</option>
-                        <option value="claim">Item Claim Issue</option>
-                        <option value="feedback">Feedback & Suggestions</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="support-message">How can we help?</label>
-                    <textarea id="support-message" name="message" rows="5" required></textarea>
-                </div>
-                <button type="submit" class="btn">Submit Ticket</button>
-            </form>
-        </section>
     </main>
 
     <footer>
@@ -579,6 +584,83 @@
     </footer>
 
     <script>
+        // Function to update avatars in header
+        function updateHeaderAvatars(avatarUrl) {
+            const accountIconImage = document.getElementById('accountIconImage');
+            const accountIconFallback = document.getElementById('accountIconFallback');
+            const dropdownAvatarImage = document.getElementById('dropdownAvatarImage');
+            const dropdownAvatarFallback = document.getElementById('dropdownAvatarFallback');
+            
+            if (avatarUrl && avatarUrl !== '') {
+                // Update account icon
+                accountIconImage.src = avatarUrl;
+                accountIconImage.style.display = 'block';
+                accountIconFallback.style.display = 'none';
+                
+                // Update dropdown avatar
+                dropdownAvatarImage.src = avatarUrl;
+                dropdownAvatarImage.style.display = 'block';
+                dropdownAvatarFallback.style.display = 'none';
+            } else {
+                // Show fallback icons if no avatar
+                accountIconImage.style.display = 'none';
+                accountIconFallback.style.display = 'block';
+                dropdownAvatarImage.style.display = 'none';
+                dropdownAvatarFallback.style.display = 'block';
+            }
+        }
+
+        // Function to update user info
+        function updateUserInfo(username, email) {
+            const usernameElement = document.getElementById('username');
+            const useremailElement = document.getElementById('useremail');
+            
+            if (username) {
+                usernameElement.textContent = username;
+            }
+            
+            if (email) {
+                useremailElement.textContent = email;
+            }
+        }
+
+        // Function to fetch user profile
+        async function fetchProfile() {
+            try {
+                const token = localStorage.getItem("authToken");
+                if (!token) {
+                    console.log("No auth token found");
+                    return;
+                }
+                
+                const res = await fetch("http://localhost:3000/api/profile", {
+                    method: "GET",
+                    headers: { 
+                        "Authorization": `Bearer ${token}`, 
+                        "Content-Type": "application/json" 
+                    }
+                });
+                
+                const result = await res.json();
+                if (result.success) {
+                    const user = result.user;
+                    updateUserInfo(user.username || user.name, user.email);
+                    
+                    // Update avatars if available
+                    if (user.avatar) {
+                        updateHeaderAvatars(user.avatar);
+                    } else {
+                        // Use default avatar
+                        updateHeaderAvatars('https://i.pravatar.cc/150?img=12');
+                    }
+                } else {
+                    console.error(result.message);
+                }
+            } catch (err) { 
+                console.error("Profile fetch failed:", err); 
+            }
+        }
+
         // Toggle account dropdown
         document.getElementById('accountIcon').addEventListener('click', function(e) {
             e.stopPropagation();
@@ -598,11 +680,13 @@
             document.getElementById('mainNav').classList.toggle('active');
         });
 
-        // Form submission
-        document.querySelector('form').addEventListener('submit', function(e) {
+        // Logout functionality
+        document.querySelector('.logout-btn').addEventListener('click', function(e) {
             e.preventDefault();
-            alert('Thank you for your support ticket! We will get back to you soon.');
-            this.reset();
+            // Clear any stored authentication data
+            localStorage.removeItem('authToken');
+            // Redirect to login page
+            window.location.href = 'login.html';
         });
 
         // Smooth scrolling for quick links
@@ -619,6 +703,20 @@
                     }
                 }
             });
+        });
+
+        // Load user profile on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchProfile();
+            
+            // Check if user is logged in (you can modify this based on your auth system)
+            const token = localStorage.getItem("authToken");
+            if (!token) {
+                // If not logged in, hide account section or redirect to login
+                document.getElementById('accountSection').style.display = 'none';
+            } else {
+                document.getElementById('accountSection').style.display = 'block';
+            }
         });
     </script>
 </body>
