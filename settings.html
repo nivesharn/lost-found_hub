@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings | Lost & Found Hub</title>
-    <!-- <link rel="stylesheet" href="style.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Base styles */
@@ -19,6 +18,9 @@
             background-color: #f5f5f5;
             color: #333;
             line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
         
         .container {
@@ -107,6 +109,14 @@
             justify-content: center;
             cursor: pointer;
             transition: background-color 0.3s;
+            overflow: hidden;
+            border: 2px solid #007BFF;
+        }
+        
+        .account-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .account-icon:hover {
@@ -155,6 +165,14 @@
             color: white;
             font-size: 1.2rem;
             margin-right: 15px;
+            overflow: hidden;
+            border: 2px solid #007BFF;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .user-details h3 {
@@ -180,7 +198,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
-            color: var(--text-color);
+            color: #333;
             text-decoration: none;
         }
         .dropdown-menu li a:hover {
@@ -193,7 +211,7 @@
         .hamburger-menu {
             display: none; 
             font-size: 1.8em;
-            color: var(--text-color);
+            color: #333;
             cursor: pointer;
             background: none;
             border: none;
@@ -203,13 +221,14 @@
         }
 
         .hamburger-menu:hover {
-            background-color: var(--bg-color-dark);
+            background-color: #e9ecef;
         }
 
         
         /* Main content */
         main {
             padding: 30px 0;
+            flex: 1;
         }
         
         h1 {
@@ -262,15 +281,6 @@
             color: #4CAF50;
             font-weight: 600;
         }
-        
-        .settings-sidebar .nav-menu li a.delete-account {
-            color: #e74c3c;
-        }
-        
-        .settings-sidebar .nav-menu li a.delete-account:hover {
-             background-color: #ffebee;
-             color: #c62828;
-        }
 
         .settings-content {
             flex-grow: 1;
@@ -297,114 +307,18 @@
             text-align: left;
         }
 
-        .form-group {
-            margin-bottom: 20px;
+        /* Account Status Styles */
+        .account-status {
+            margin-top: 20px;
         }
         
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
+        .account-status p {
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .account-status strong {
             color: #333;
-        }
-
-        .form-group input[type="text"],
-        .form-group input[type="email"],
-        .form-group input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
-        }
-        
-        .form-group input[type="email"][disabled] {
-            background-color: #f5f5f5;
-            cursor: not-allowed;
-        }
-
-        .notification-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        .notification-item:last-child {
-            border-bottom: none;
-        }
-
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 28px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 28px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #4CAF50;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(22px);
-        }
-        
-        /* Button styles */
-        .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: background-color 0.3s;
-        }
-        
-        .btn:hover {
-            background-color: #3d8b40;
-        }
-        
-        .btn-primary {
-            background-color: #4CAF50;
-        }
-        
-        .btn-primary:hover {
-            background-color: #3d8b40;
         }
 
         /* Footer styles */
@@ -412,7 +326,7 @@
             background-color: #333;
             color: #fff;
             padding: 30px 0;
-            margin-top: 50px;
+            margin-top: auto;
         }
         
         footer .container {
@@ -473,11 +387,15 @@
             </nav>
             <div class="account-section" id="accountSection">
                 <div class="account-icon" id="accountIcon">
-                    <i class="fas fa-user"></i>
+                    <i class="fas fa-user" id="accountIconFallback"></i>
+                    <img id="accountIconImage" style="display: none;" alt="User Avatar">
                 </div>
                 <div class="dropdown" id="accountDropdown">
                     <div class="user-info">
-                        <div class="user-avatar"><i class="fas fa-user"></i></div>
+                        <div class="user-avatar">
+                            <i class="fas fa-user" id="dropdownAvatarFallback"></i>
+                            <img id="dropdownAvatarImage" style="display: none;" alt="User Avatar">
+                        </div>
                         <div class="user-details">
                             <h3 id="username">nivesharm</h3>
                             <p id="useremail">nivesharm@example.com</p>
@@ -485,7 +403,6 @@
                     </div>
                     <ul class="dropdown-menu">
                         <li><a href="profile.html"><i class="fas fa-user-circle"></i> Your Profile</a></li>
-                        <!-- <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li> -->
                         <li><a href="help.html"><i class="fas fa-question-circle"></i> Help & Support</a></li>
                         <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
                         <li><a href="contact.html" aria-label="Home"><i class="fas fa-phone contact-icons"></i> Contact</a></li>
@@ -502,53 +419,11 @@
         <div class="settings-layout">
             <aside class="settings-sidebar">
                 <ul class="nav-menu">
-                    <li><a href="#profile" class="settings-link active"><i class="fas fa-user-edit"></i> Profile</a></li>
-                    <li><a href="#security" class="settings-link"><i class="fas fa-shield-alt"></i> Account & Security</a></li>
-                    <li><a href="#notifications" class="settings-link"><i class="fas fa-bell"></i> Notifications</a></li>
-                    <li><a href="#accountsettings" class="settings-link"><i class="fas fa-cog"></i> Account settings</a></li>
-                    <li><a href="#delete-account" class="settings-link delete-account"><i class="fas fa-trash-alt"></i> Delete Account</a></li>
+                    <li><a href="#accountsettings" class="settings-link active"><i class="fas fa-cog"></i> Account Settings</a></li>
                 </ul>
             </aside>
             <div class="settings-content">
-                <section id="profile" class="setting-section active">
-                    <h2>Public Profile</h2>
-                    <form id="profileForm">
-                        <div class="form-group">
-                            <label for="displayName">Display Name</label>
-                            <input type="text" id="displayName" value="Nivesh R">
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" value="nivesharm@example.com" disabled>
-                        </div>
-                        <div class="form-group">
-                            <label for="contactNumber">Contact Number (Optional)</label>
-                            <input type="text" id="contactNumber" placeholder="Enter your phone number">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                    </form>
-                </section>
-
-                <section id="security" class="setting-section">
-                    <h2>Account & Security</h2>
-                    <form id="securityForm">
-                        <div class="form-group">
-                            <label for="currentPassword">Current Password</label>
-                            <input type="password" id="currentPassword">
-                        </div>
-                        <div class="form-group">
-                            <label for="newPassword">New Password</label>
-                            <input type="password" id="newPassword">
-                        </div>
-                        <div class="form-group">
-                            <label for="confirmPassword">Confirm New Password</label>
-                            <input type="password" id="confirmPassword">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Update Password</button>
-                    </form>
-                </section>
-
-                <section id="accountsettings" class="setting-section">
+                <section id="accountsettings" class="setting-section active">
                     <h2>Account Settings</h2>
                     <div class="account-status">
                         <p><strong>Account Status:</strong> <span style="color: green;">Active</span></p>
@@ -556,39 +431,6 @@
                         <p><strong>Two-Factor Auth:</strong> <span style="color: #e74c3c;">Disabled</span></p>
                         <p><strong>Login Count:</strong> <span id="loginCount">142</span></p>
                     </div>
-                </section>
-
-                <section id="notifications" class="setting-section">
-                    <h2>Notification Settings</h2>
-                    <form id="notificationForm">
-                        <div class="notification-item">
-                            <div>
-                                <h4>Email Notifications</h4>
-                                <p>Receive notifications via email</p>
-                            </div>
-                            <label class="toggle-switch">
-                                <input type="checkbox" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="notification-item">
-                            <div>
-                                <h4>Push Notifications</h4>
-                                <p>Receive browser notifications</p>
-                            </div>
-                            <label class="toggle-switch">
-                                <input type="checkbox" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Save Notification Settings</button>
-                    </form>
-                </section>
-                
-                <section id="delete-account" class="setting-section">
-                    <h2>Delete Account</h2>
-                    <p>This action is irreversible. All your reported items and personal data will be permanently removed. Please be certain before you proceed.</p>
-                    <button class="btn" style="background-color: #e74c3c; color: white;" id="deleteAccountBtn">Delete My Account</button>
                 </section>
             </div>
         </div>
@@ -661,42 +503,122 @@
                     nav.style.display = nav.style.display === 'block' ? 'none' : 'block';
                 });
             }
-            
-            // Form submission handlers
-            const profileForm = document.getElementById('profileForm');
-            if(profileForm) {
-                profileForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    alert('Profile updated successfully!');
-                });
+
+            // Avatar functionality
+            const accountIconImage = document.getElementById('accountIconImage');
+            const accountIconFallback = document.getElementById('accountIconFallback');
+            const dropdownAvatarImage = document.getElementById('dropdownAvatarImage');
+            const dropdownAvatarFallback = document.getElementById('dropdownAvatarFallback');
+
+            // Load user avatar on page load
+            loadUserAvatar();
+
+            // Load user profile on page load
+            loadUserProfile();
+        });
+
+        // API Functions
+        async function loadUserProfile() {
+            const token = localStorage.getItem("authToken");
+
+            if (!token) {
+                document.getElementById("username").textContent = "Guest";
+                document.getElementById("useremail").textContent = "Not logged in";
+                return;
             }
-            
-            const securityForm = document.getElementById('securityForm');
-            if(securityForm) {
-                securityForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    alert('Password updated successfully!');
-                });
-            }
-            
-            const notificationForm = document.getElementById('notificationForm');
-            if(notificationForm) {
-                notificationForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    alert('Notification settings saved!');
-                });
-            }
-            
-            // Delete account confirmation
-            const deleteAccountBtn = document.getElementById('deleteAccountBtn');
-            if(deleteAccountBtn) {
-                deleteAccountBtn.addEventListener('click', function() {
-                    if(confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-                        alert('Account deletion process initiated. You will receive a confirmation email.');
+
+            try {
+                const response = await fetch("http://localhost:3000/api/profile", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
                     }
                 });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const user = result.user;
+
+                    // Update dropdown
+                    document.getElementById('username').textContent = user.username || user.name || "No Name";
+                    document.getElementById('useremail').textContent = user.email;
+                    
+                    // Set avatar in all locations if available
+                    if (user.avatar) {
+                        updateAllAvatars(user.avatar);
+                    } else {
+                        // Use default avatar
+                        updateAllAvatars('https://i.pravatar.cc/150?img=12');
+                    }
+                } else {
+                    document.getElementById("username").textContent = "Error";
+                    document.getElementById("useremail").textContent = result.message;
+                }
+            } catch (err) {
+                console.error("Profile fetch failed:", err);
+                document.getElementById("username").textContent = "Error";
+                document.getElementById("useremail").textContent = "Could not load profile";
             }
-        });
+        }
+
+        async function loadUserAvatar() {
+            const token = localStorage.getItem("authToken");
+            
+            if (!token) {
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:3000/api/profile", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success && result.user.avatar) {
+                    updateAllAvatars(result.user.avatar);
+                } else {
+                    // Use default avatar if none exists
+                    updateAllAvatars('https://i.pravatar.cc/150?img=12');
+                }
+            } catch (err) {
+                console.error("Avatar fetch failed:", err);
+                // Use default avatar on error
+                updateAllAvatars('https://i.pravatar.cc/150?img=12');
+            }
+        }
+
+        // Function to update avatar in all locations
+        function updateAllAvatars(avatarUrl) {
+            // Update account icon avatar
+            const accountIconImage = document.getElementById('accountIconImage');
+            const accountIconFallback = document.getElementById('accountIconFallback');
+            
+            if (avatarUrl && avatarUrl !== '') {
+                accountIconImage.src = avatarUrl;
+                accountIconImage.style.display = 'block';
+                accountIconFallback.style.display = 'none';
+                
+                // Update dropdown avatar
+                const dropdownAvatarImage = document.getElementById('dropdownAvatarImage');
+                const dropdownAvatarFallback = document.getElementById('dropdownAvatarFallback');
+                dropdownAvatarImage.src = avatarUrl;
+                dropdownAvatarImage.style.display = 'block';
+                dropdownAvatarFallback.style.display = 'none';
+            } else {
+                // Show fallback icons if no avatar
+                accountIconImage.style.display = 'none';
+                accountIconFallback.style.display = 'block';
+                dropdownAvatarImage.style.display = 'none';
+                dropdownAvatarFallback.style.display = 'block';
+            }
+        }
     </script>
 </body>
 </html>

@@ -140,12 +140,12 @@ async function initializeDatabase() {
         `);
 
         // Insert admin user if not exists
-        const [adminUsers] = await connection.execute('SELECT * FROM users WHERE email = ?', ['admin@gmail.com']);
+        const [adminUsers] = await connection.execute('SELECT * FROM users WHERE email = ?', ['lostnfoundhub1@gmail.com']);
         if (adminUsers.length === 0) {
             const adminPasswordHash = await bcrypt.hash('Admin@12', 10);
             await connection.execute(
                 'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
-                ['admin', 'admin@gmail.com', adminPasswordHash, 'admin']
+                ['admin', 'lostnfoundhub1@gmail.com', adminPasswordHash, 'admin']
             );
             console.log('Admin user created');
         }
@@ -242,7 +242,7 @@ app.post('/api/login', async (req, res) => {
         }
 
         // Admin login
-        if (email === "admin@gmail.com" && password === "Admin@12") {
+        if (email === "lostnfoundhub1@gmail.com" && password === "Admin@12") {
             const token = generateToken("admin");
             return res.json({
                 success: true,
@@ -620,7 +620,7 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
                 user: { 
                     user_id: "admin", 
                     username: "Administrator", 
-                    email: "admin@gmail.com", 
+                    email: "lostnfoundhub1@gmail.com", 
                     role: "admin",
                     full_name: "Administrator",
                     phone: "",
