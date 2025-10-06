@@ -5,6 +5,13 @@
     min-height: calc(100vh - 150px); /* Adjust height to fit header/footer */
     padding: 40px 20px;
 }
+.form-page h3{
+     color: #007BFF; 
+     font-weight: bold; 
+     text-align: center; 
+     text-decoration: underline;
+     font-style: italic;
+}
 
 .login-register-container {
     display: flex;

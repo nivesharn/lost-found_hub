@@ -65,7 +65,7 @@
 
         nav ul li a:hover {
             background-color: #e9ecef;
-            color: #007BFF;        
+            color: #007BFF;          
         }
 
         nav ul li a i {
@@ -266,7 +266,6 @@
             align-items: center;
         }
 
-        /* ADDED: Success button styles */
         .success-button {
             background-color: #007BFF;
             color: white;
@@ -322,6 +321,66 @@
             cursor: pointer;
         }
 
+        /* Info Icon and Tooltip Styles */
+        .submit-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-icon-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .info-icon {
+            color: #007BFF;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .info-icon:hover {
+            color: #0056b3;
+        }
+
+        .info-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            margin-bottom: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            
+        }
+
+        .info-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
+        .info-icon-container:hover .info-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -352,6 +411,21 @@
                 background: white;
                 padding: 20px;
                 box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            }
+            
+            .submit-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .info-tooltip {
+                left: 0;
+                transform: none;
+            }
+            
+            .info-tooltip::after {
+                left: 20px;
             }
         }
     </style>
@@ -487,7 +561,29 @@
                     <p>Submitting your report and notifying admin...</p>
                 </div>
 
-                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit Report</button>
+                <div class="submit-section">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit Report</button>
+                    <div class="info-icon-container">
+                        <i style="margin-top: 20px;" class="fas fa-info-circle info-icon"></i>
+                        <div class="info-tooltip">
+                            <ol>
+                                <dh>
+                                    1. Before Submission:
+                                </dh>
+                                <dd>
+                                    Please check that all details are correct. Accurate info helps us process your report quickly.
+                                </dd>
+                                <hr>
+                                <dh>
+                                    2. After Successful Submission:
+                                </dh>
+                                <dd>
+                                    Your report will submitted successfully! Our coordinator will contact you soon. Thank you!
+                                </dd>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
             </form>
         </section>
     </main>
@@ -504,7 +600,7 @@
                 <i class="fas fa-check"></i>
             </div>
             <h2>Submitted Successfully!</h2>
-            <p>Your item has been saved to database and admin has been notified.</p>
+            <p>Your submitted item is updated to admin and has been notified.</p>
             <button class="success-button" id="successButton">OK</button>
         </div>
     </div>
@@ -812,9 +908,16 @@
             return isValid;
         }
 
-        // Close success modal - FIXED: Added proper event listener
+        // Close success modal when the OK button is clicked
         document.getElementById('successButton').addEventListener('click', function() {
             document.getElementById('successModal').style.display = 'none';
+        });
+
+        // Also close modal when clicking outside the modal content
+        document.getElementById('successModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
         });
 
         // Set today's date as default
