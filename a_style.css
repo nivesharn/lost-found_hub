@@ -58,12 +58,13 @@ header {
     align-items: center;
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--primary-color);
+    color: #4CAF50;
 }
 
 .logo i {
     font-size: 1.8rem;
     margin-right: 10px;
+    color: #007BFF;
 }
 
 nav ul {
@@ -123,12 +124,12 @@ nav a:hover {
 }
 
 .btn-secondary {
-    background-color: var(--secondary-color);
+    background-color: #4CAF50;
     color: white;
 }
 
 .btn-secondary:hover {
-    background-color: #5a6268;
+    background-color: red;
 }
 
 .btn-success {
