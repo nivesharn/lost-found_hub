@@ -4,115 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lost & Found Portal</title>
+    <link rel="stylesheet" href="style.css"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* General Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f8f9fa;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header Styles */
-        header {
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #007BFF;
-            text-decoration: none;
-        }
-
-        .logo a {
-            text-decoration: none;
-            color: #007BFF;
-        }
-
-        .logo i {
-            margin-right: 10px;
-            font-size: 1.8rem;
-        }
-
-        .welcome-message {
-            display: none;
-            margin-left: 25px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #007BFF;
-            padding: 5px 0;
-        }
-
-        .welcome-message.active {
-            display: block;
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-        }
-
-        nav li {
-            margin-left: 20px;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            transition: color 0.3s;
-        }
-
-        nav a:hover {
-            color: #007BFF;
-        }
-
-        nav a i {
-            margin-right: 5px;
-        }
-
-        /* Dropdown Styles */
+        /* Additional CSS for dropdown fix */
         .nav-dropdown {
             position: relative;
         }
-
+        
         .dropdown-content {
             display: none;
             position: absolute;
@@ -125,11 +27,11 @@
             z-index: 1000;
             padding: 8px 0;
         }
-
+        
         .nav-dropdown:hover .dropdown-content {
             display: block;
         }
-
+        
         .dropdown-content a {
             display: block;
             padding: 10px 16px;
@@ -137,16 +39,18 @@
             color: #333;
             transition: background-color 0.2s;
         }
-
+        
         .dropdown-content a:hover {
             background-color: #f8f9fa;
         }
-
-        /* Account Section */
-        .account-section {
-            position: relative;
+        
+        /* Ensure dropdown stays open when hovering over it */
+        .nav-dropdown:hover .dropdown-content,
+        .dropdown-content:hover {
+            display: block;
         }
 
+        /* Avatar styles for header */
         .account-icon {
             width: 40px;
             height: 40px;
@@ -160,9 +64,10 @@
             transition: background-color 0.3s;
             overflow: hidden;
             position: relative;
-            border: 2px solid #007BFF;
+            border-radius: 50%;
+            border: 3px solid #007BFF;
         }
-
+        
         .account-icon img {
             width: 100%;
             height: 100%;
@@ -174,39 +79,15 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translate(-0%, -50%);
         }
         
-        .dropdown {
-            display: none;
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: white;
-            min-width: 250px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            z-index: 1000;
-            margin-top: 10px;
-        }
-
-        .dropdown.active {
-            display: block;
-        }
-
-        .user-info {
-            display: flex;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            align-items: center;
-        }
-
         .user-avatar {
             width: 50px;
             height: 50px;
             border-radius: 50%;
             background-color: #4CAF50;
-            display: flex;
+            display: block;
             align-items: center;
             justify-content: center;
             color: white;
@@ -214,16 +95,17 @@
             margin-right: 15px;
             overflow: hidden;
             position: relative;
-            border: 2px solid #007BFF;
+            border-radius: 50%;
+            border: 3px solid #007BFF;
         }
-
+        
         .user-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: none;
         }
-
+        
         .user-avatar .fa-user {
             position: absolute;
             top: 50%;
@@ -231,680 +113,139 @@
             transform: translate(-50%, -50%);
         }
 
-        .user-details h3 {
-            margin-bottom: 5px;
-            font-size: 1.1rem;
+        /* Welcome message styles */
+        .welcome-message {
+            display: none;
+            margin-left: 25px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007BFF;
+            padding: 5px 0;
         }
 
-        .user-details p {
-            color: #666;
-            font-size: 0.9rem;
+        .welcome-message.active {
+            display: block;
         }
-        
-        .dropdown-menu {
-            list-style: none;
-            padding: 10px 0;
-        }
-        
-        .dropdown-menu li {
-            margin: 0;
-        }
-        
-        .dropdown-menu a {
+
+        .logo-container {
             display: flex;
             align-items: center;
-            padding: 10px 15px;
-            text-decoration: none;
-            color: #333;
-            transition: background-color 0.2s;
         }
 
-        .dropdown-menu a:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .dropdown-menu a i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-        
-        .logout-btn {
-            color: #d32f2f !important;
-            border-top: 1px solid #eee;
-            margin-top: 5px;
-        }
-
-        .hamburger-menu {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #333;
-        }
-
-        /* Hero Section */
-        .hero-section {
-            text-align: center;
-            padding: 60px 0;
-            background: linear-gradient(135deg, #007BFF, #0056b3);
-            color: white;
-            border-radius: 0 0 20px 20px;
-            margin-bottom: 40px;
-        }
-
-        .hero-section h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-
-        .hero-section p {
-            font-size: 1.2rem;
-            max-width: 600px;
-            margin: 0 auto 30px;
-            opacity: 0.9;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s;
-            cursor: pointer;
-            border: none;
-            font-size: 1rem;
-        }
-
-        .btn-primary {
-            background-color: white;
-            color: #007BFF;
-        }
-        
-        .btn-primary:hover {
-            background-color: #f8f9fa;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid #007BFF;
-            color: #007BFF;
-        }
-
-        .btn-outline:hover {
-            background-color: #007BFF;
+        /* Item type colors */
+        .item-type.lost {
+            background-color: #dc3545;
             color: white;
         }
 
-        /* Filter/Search Section */
-        .filter-search-section {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            margin-bottom: 40px;
-        }
-
-        .search-bar {
-            display: flex;
-            margin-bottom: 20px;
-        }
-
-        .search-bar input {
-            flex: 1;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px 0 0 8px;
-            font-size: 1rem;
-        }
-        
-        .search-bar button {
-            border-radius: 0 8px 8px 0;
-            background-color: #007BFF;
+        .item-type.found {
+            background-color: #28a745;
             color: white;
-        }
-        
-        .filters {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .filters select {
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            background-color: white;
-        }
-
-        /* Item Listings */
-        .item-listings {
-            margin-bottom: 60px;
-        }
-
-        .item-listings h2 {
-            margin-bottom: 20px;
-            font-size: 1.8rem;
-            color: #333;
-        }
-        
-        .item-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
-        }
-
-        .item-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 20px;
-            transition: transform 0.3s, box-shadow 0.3s;
-            position: relative;
-            overflow: hidden;
-            border-left: 5px solid transparent;
-        }
-
-        .item-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
-
-        .item-card.lost {
-            border-left-color: #dc3545;
-        }
-
-        .item-card.found {
-            border-left-color: #28a745;
         }
 
         .item-type {
-            display: inline-block;
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: bold;
+            text-transform: uppercase;
+            display: inline-block;
             margin-bottom: 10px;
         }
-        
-        .item-type.lost {
-            background-color: #fee2e2;
-            color: #b91c1c;
-        }
-        
-        .item-type.found {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-        
-        .item-card h3 {
-            margin: 10px 0;
-            font-size: 1.2rem;
-        }
 
-        .item-card p {
-            color: #666;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-
-        .item-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: #888;
-        }
-        
-        .item-meta span {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .item-image {
-            text-align: center;
-            margin-bottom: 15px;
+        /* Image preview styles */
+        .item-image-preview {
+            cursor: pointer;
             color: #007BFF;
-        }
-        
-        /* Skeleton loading animation */
-        .skeleton {
-            animation: skeleton-loading 1.5s infinite;
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            height: 250px;
+            margin-top: 10px;
+            padding: 5px 10px;
+            border: 1px solid #007BFF;
+            border-radius: 5px;
+            display: inline-block;
+            transition: all 0.3s ease;
         }
 
-        @keyframes skeleton-loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* Info and error messages */
-        .info-message, .error-message {
-            text-align: center;
-            padding: 20px;
-            font-size: 1.1rem;
-            margin-top: 20px;
-        }
-        
-        .info-message { color: #666; }
-        
-        .error-message {
-            color: #d32f2f;
-            background-color: #ffebee;
-            border-radius: 8px;
-        }
-
-        /* Sections */
-        section {
-            margin-bottom: 60px;
-        }
-        section h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 1.8rem;
-        }
-        
-        /* Statistics section */
-        .stats-grid {
-            display: flex;
-            justify-content: space-around;
-            text-align: center;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .stat-card {
-            padding: 20px;
-            border-radius: 12px;
-            background: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: 200px;
-        }
-
-        .stat-card i {
-            color: #007BFF;
-            margin-bottom: 15px;
-        }
-
-        .stat-card p {
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 10px 0;
-            color: #333;
-        }
-
-        .stat-card h3 {
-            color: #666;
-            font-size: 1rem;
-        }
-
-        /* About Section */
-        .about-section { 
-            text-align: center; 
-            padding: 60px 0;
-        }
-
-        .subtitle {
-            max-width: 800px;
-            margin: 0 auto;
-            font-size: 1.1rem;
-            color: #666;
-            line-height: 1.6;
-        }
-
-        .mission-vision-wrapper {
-            display: flex;
-            gap: 30px;
-            margin: 40px 0;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .info-card {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            flex: 1;
-            min-width: 300px;
-            text-align: center;
-        }
-
-        .info-card i {
-            font-size: 2.5rem;
-            color: #007BFF;
-            margin-bottom: 20px;
-        }
-
-        .info-card h2 {
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        .info-card p {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin-top: 40px;
-            flex-wrap: wrap;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-number {
-            display: block;
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #007BFF;
-        }
-
-        .stat-label {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        /* Success Stories */
-        .success-stories {
-            padding: 60px 0;
-            background-color: #f8f9fa;
-        }
-
-        .stories-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        .story-card {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            position: relative;
-        }
-
-        .quote-icon {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 1.5rem;
-            color: #007BFF;
-            opacity: 0.3;
-        }
-
-        .story-card p {
-            font-style: italic;
-            margin-bottom: 20px;
-            color: #555;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-        }
-
-        .user-details h4 {
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        .user-details span {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        /* Team Section */
-        .team-section {
-            padding: 60px 0;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .section-title p {
-            color: #666;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-        }
-
-        .team-member {
-            text-align: center;
-            background: white;
-            padding: 30px 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .member-image {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            overflow: hidden;
-            margin: 0 auto 20px;
-            border: 4px solid #007BFF;
-        }
-
-        .member-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .member-name {
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .member-role {
-            color: #007BFF;
-            font-weight: 500;
-            margin-bottom: 15px;
-        }
-
-        .member-bio {
-            color: #666;
-            line-height: 1.6;
-        }
-        
-        /* Footer */
-        footer {
-            background-color: #333;
+        .item-image-preview:hover {
+            background-color: #007BFF;
             color: white;
-            padding: 40px 0 20px;
         }
 
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-        
-        .footer-column h3 {
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-        }
-        
-        .footer-column p {
-            margin-bottom: 20px;
-            color: #ccc;
-        }
-        
-        .footer-column ul { list-style: none; }
-        .footer-column li { margin-bottom: 10px; }
-        .footer-column a {
-            color: #ccc;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        .footer-column a:hover { color: white; }
-        
-        .social-links {
-            display: flex;
-            gap: 15px;
-        }
-        
-        .social-links a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            background-color: #444;
-            border-radius: 50%;
-            transition: background-color 0.3s;
-        }
-        
-        .social-links a:hover { background-color: #007BFF; }
-        
-        .footer-bottom {
-            text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid #444;
-            color: #ccc;
-            font-size: 0.9rem;
-        }
-
-        /* Modal Styles */
-        .modal-backdrop {
+        .image-preview-modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1000;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            z-index: 1001;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-content {
-            padding: 0;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            justify-content: center;
             align-items: center;
-            padding: 20px;
-            border-bottom: 1px solid #eee;
         }
 
-        .modal-header h3 {
-            margin: 0;
+        .image-preview-modal.active {
+            display: flex;
         }
 
-        .close-btn {
+        .image-preview-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .image-preview-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .close-preview {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
             background: none;
             border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #666;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .modal-body {
-            padding: 20px;
+        .close-preview:hover {
+            color: #ff6b6b;
         }
 
-        .modal-body h4 {
-            margin: 20px 0 10px;
-            color: #333;
-        }
-
-        .modal-body p {
-            margin-bottom: 15px;
-            line-height: 1.6;
-        }
-
-        .modal-body ul {
-            margin-bottom: 15px;
-            padding-left: 20px;
-        }
-
-        .modal-body li {
-            margin-bottom: 5px;
-        }
-
-        .modal-open {
-            overflow: hidden;
-        }
-
-        /* Responsive design */
         @media (max-width: 768px) {
             .welcome-message {
                 font-size: 0.9rem;
                 margin-left: 10px;
             }
-            .item-grid { grid-template-columns: 1fr; }
-            .stats-grid {
-                flex-direction: column;
-                align-items: center;
+            
+            .image-preview-content {
+                max-width: 95%;
             }
-            .hamburger-menu { display: block; }
-            nav#mainNav ul {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: white;
-                flex-direction: column;
-                padding: 20px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            }
-            nav#mainNav ul.active { display: flex; }
-            nav li { margin: 10px 0; }
-            .hero-section h1 { font-size: 2rem; }
-            .search-bar { flex-direction: column; }
-            .search-bar input {
-                border-radius: 8px;
-                margin-bottom: 10px;
-            }
-            .search-bar button { border-radius: 8px; }
-            .filters { flex-direction: column; }
-            .mission-vision-wrapper { flex-direction: column; }
-            .info-card { min-width: 100%; }
-            .stats { gap: 20px; }
-            .stat-number { font-size: 2rem; }
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007BFF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -913,10 +254,12 @@
         <div class="container header-content">
             <div class="logo-container">
                 <div class="logo">
-                    <i class="fas fa-search-location"></i>
+                    <i class="fas fa-search-location" style="color: #007BFF;"></i>
                     <a href="index.html"><span>Lost & Found Hub</span></a>
                 </div>
-                <div class="welcome-message" id="welcomeMessage"></div>
+                <div class="welcome-message" id="welcomeMessage">
+                    <!-- Welcome message will be inserted here dynamically -->
+                </div>
             </div>
             <nav id="mainNav">
                 <ul>
@@ -926,28 +269,28 @@
                             <i class="fas fa-info-circle"></i> More info <i class="fas fa-caret-down"></i>
                         </a>
                         <div class="dropdown-content">
-                            <a href="#about-us" aria-label="About Us"><i class="fas fa-users"></i> About Us</a>
+                            <a href="#about-us" aria-label="About Us"> <i class="fas fa-users"></i> About Us</a>
                             <a href="#reviews" aria-label="Reviews"><i class="fas fa-comments"></i> Reviews</a>
-                            <a href="#team" aria-label="Our Team"><i class="fas fa-users"></i> Our Team</a>
+                            <a href="#team" aria-label="Our Team"><i class="fas fa-cloud cloud-icon"></i> Our Team</a>
                             <a href="#statistics" aria-label="Statistics"><i class="fas fa-chart-bar"></i> Statistics</a>
                         </div>
                     </li>
                 </ul>
             </nav>
-            <div class="account-section" id="accountSection">
+            <div class="account-section" id="accountSection" style="display: none;">
                 <div class="account-icon" id="accountIcon">
                     <i class="fas fa-user" id="accountIconFallback"></i>
-                    <img id="accountIconImage" alt="User Avatar" style="display: none;">
+                    <img id="accountIconImage" alt="User Avatar">
                 </div>
                 <div class="dropdown" id="accountDropdown">
                     <div class="user-info">
                         <div class="user-avatar">
                             <i class="fas fa-user" id="dropdownAvatarFallback"></i>
-                            <img id="dropdownAvatarImage" alt="User Avatar" style="display: none;">
+                            <img id="dropdownAvatarImage" alt="User Avatar">
                         </div>
                         <div class="user-details">
-                            <h3 id="username">Guest User</h3>
-                            <p id="useremail">guest@example.com</p>
+                            <h3 id="username">Username</h3>
+                            <p id="useremail">user@example.com</p>
                         </div>
                     </div>
                     <ul class="dropdown-menu">
@@ -955,9 +298,9 @@
                         <li><a href="submit-item.html" id="dropdownSubmitItem" aria-label="Submit Item"><i class="fas fa-plus-circle"></i> Submit Item</a></li>
                         <li><a href="help.html"><i class="fas fa-question-circle"></i> Help & Support</a></li>
                         <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
-                        <li><a href="contact.html" aria-label="Contact"><i class="fas fa-phone"></i> Contact</a></li>
+                        <li><a href="contact.html" aria-label="Home"><i class="fas fa-phone"></i> Contact</a></li>
                         <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
-                        <li><a href="login.html" id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Login</a></li>
+                        <li><a href="login.html" id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                     </ul>
                 </div>
             </div>
@@ -966,6 +309,14 @@
             </button>
         </div>
     </header>
+
+    <!-- Image Preview Modal -->
+    <div class="image-preview-modal" id="imagePreviewModal">
+        <div class="image-preview-content">
+            <button class="close-preview" id="closePreview">&times;</button>
+            <img id="previewImage" alt="Item Image Preview">
+        </div>
+    </div>
 
     <main class="container">
         <!-- Hero Section -->
@@ -1005,23 +356,23 @@
         <section class="item-listings">
             <h2>Recently Reported Items</h2>
             <div id="itemListings" class="item-grid">
-                <!-- Skeleton loaders shown on initial load -->
                 <div class="item-card skeleton"></div>
                 <div class="item-card skeleton"></div>
                 <div class="item-card skeleton"></div>
                 <div class="item-card skeleton"></div>
             </div>
             <p id="noItemsMessage" class="info-message" style="display:none;">No items found matching your criteria.</p>
-            <p id="loadingMessage" class="info-message" style="display:block;">Loading items...</p>
-            <p id="errorMessage" class="error-message" style="display:none;">Error loading items. Please try again later.</p>
+            <div id="loadingMessage" class="info-message" style="display:none;">
+                <div class="loading-spinner"></div> Loading items...
+            </div>
         </section>
 
         <!-- About Section -->
         <section id="about-us" class="about-section">
             <h2>About Lost & Found Hub</h2>
             <p class="subtitle">
-                We are dedicated to reuniting people with their cherished belongings. Our platform leverages community and technology to make finding lost items simpler and more efficient for everyone. 
-                <a href="work.html" style="text-decoration:none;"><span style="color:#007BFF;" ><strong>Do visit Our Success Gallery</strong> <i class="fas fa-external-link-alt"></i></span></a>
+                We are dedicated to reuniting people with their cherished belongings. Our platform leverages community and technology to make finding lost items simpler and more efficient for everyone. <br>
+                <a href="success_galary.html" style="text-decoration:none;"><span style="color:#007BFF;" ><strong>Do visit Our Success Gallery</strong> <i class="fas fa-external-link-alt"></i></span></a>
             </p>
 
             <div class="mission-vision-wrapper">
@@ -1139,22 +490,22 @@
             <h2>Our Impact</h2>
             <div class="stats-grid">
                 <div class="stat-card">
-                    <i class="fas fa-box-open fa-3x"></i>
+                    <i class="fas fa-box-open"></i>
                     <p id="totalItemsCount">0</p>
                     <h3>Total Items Reported</h3>
                 </div>
                 <div class="stat-card">
-                    <i class="fas fa-handshake fa-3x"></i>
+                    <i class="fas fa-handshake"></i>
                     <p id="claimedItemsCount">0</p>
                     <h3>Items Claimed</h3>
                 </div>
                 <div class="stat-card">
-                    <i class="fas fa-check-circle fa-3x"></i>
+                    <i class="fas fa-check-circle"></i>
                     <p id="resolvedItemsCount">0</p>
                     <h3>Items Resolved</h3>
                 </div>
             </div>
-            <p class="note" style="text-align: center; margin-top: 20px; color: #777;">These statistics are updated in real-time as items are reported and resolved.</p>
+            <p class="note">These statistics are updated in real-time as items are reported and resolved.</p>
         </section>
     </main>
 
@@ -1403,11 +754,12 @@
     </div>
 
     <!-- Scripts -->
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
         document.addEventListener('DOMContentLoaded', function() {
             // --- UI Elements ---
-            const loadingMessage = document.getElementById('loadingMessage');
-            const errorMessage = document.getElementById('errorMessage');
             const accountIcon = document.getElementById('accountIcon');
             const accountDropdown = document.getElementById('accountDropdown');
             const hamburgerMenu = document.getElementById('hamburgerMenu');
@@ -1422,22 +774,26 @@
             const dropdownAvatarImage = document.getElementById('dropdownAvatarImage');
             const dropdownAvatarFallback = document.getElementById('dropdownAvatarFallback');
             const welcomeMessage = document.getElementById('welcomeMessage');
-            const itemListings = document.getElementById('itemListings');
-            const noItemsMessage = document.getElementById('noItemsMessage');
-            
-            // --- App State ---
-            let allItems = []; 
 
-            // --- UI Functions ---
+            // Image Preview Elements
+            const imagePreviewModal = document.getElementById('imagePreviewModal');
+            const previewImage = document.getElementById('previewImage');
+            const closePreview = document.getElementById('closePreview');
+
+            // Function to update avatars in header
             function updateHeaderAvatars(avatarUrl) {
                 if (avatarUrl && avatarUrl !== '') {
+                    // Update account icon
                     accountIconImage.src = avatarUrl;
                     accountIconImage.style.display = 'block';
                     accountIconFallback.style.display = 'none';
+                    
+                    // Update dropdown avatar
                     dropdownAvatarImage.src = avatarUrl;
                     dropdownAvatarImage.style.display = 'block';
                     dropdownAvatarFallback.style.display = 'none';
                 } else {
+                    // Show fallback icons if no avatar
                     accountIconImage.style.display = 'none';
                     accountIconFallback.style.display = 'block';
                     dropdownAvatarImage.style.display = 'none';
@@ -1445,6 +801,7 @@
                 }
             }
 
+            // Function to update welcome message
             function updateWelcomeMessage(username) {
                 if (username && username !== '') {
                     welcomeMessage.textContent = `Welcome, ${username}`;
@@ -1453,224 +810,285 @@
                     welcomeMessage.classList.remove('active');
                 }
             }
-            
-            // --- Dropdown Logic ---
-            accountIcon.addEventListener('click', e => { 
-                e.stopPropagation(); 
-                accountDropdown.classList.toggle('active'); 
-            });
-            
-            document.addEventListener('click', e => { 
-                if (!accountDropdown.contains(e.target) && !accountIcon.contains(e.target)) {
-                    accountDropdown.classList.remove('active'); 
+
+            // --- Image Preview Functions ---
+            function openImagePreview(imageUrl) {
+                previewImage.src = imageUrl;
+                imagePreviewModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeImagePreview() {
+                imagePreviewModal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+
+            // Event listeners for image preview
+            closePreview.addEventListener('click', closeImagePreview);
+
+            // Close preview when clicking on backdrop
+            imagePreviewModal.addEventListener('click', (e) => {
+                if (e.target === imagePreviewModal) {
+                    closeImagePreview();
                 }
             });
-            
-            hamburgerMenu.addEventListener('click', () => {
-                const navUl = mainNav.querySelector('ul');
-                navUl.classList.toggle('active');
+
+            // Keyboard navigation for image preview
+            document.addEventListener('keydown', (e) => {
+                if (imagePreviewModal.classList.contains('active') && e.key === 'Escape') {
+                    closeImagePreview();
+                }
             });
 
-            // --- Authentication ---
-            function initializeAuth() {
-                // Show account section for guest user
+            // --- Dropdown Logic ---
+            accountIcon.addEventListener('click', e => { e.stopPropagation(); accountDropdown.classList.toggle('active'); });
+            document.addEventListener('click', e => { if (!accountDropdown.contains(e.target) && !accountIcon.contains(e.target)) accountDropdown.classList.remove('active'); });
+
+            // --- Hamburger Menu ---
+            hamburgerMenu.addEventListener('click', () => mainNav.classList.toggle('active'));
+
+            // --- Firebase Config ---
+            const firebaseConfig = {};
+            let auth;
+            if (Object.keys(firebaseConfig).length > 0) {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        accountSection.style.display = 'block';
+                        navSubmitItem.href = 'submit-item.html';
+                        document.getElementById('dropdownSubmitItem').href = 'submit-item.html';
+                        const username = user.displayName || user.email.split('@')[0];
+                        dropdownUsername.textContent = username;
+                        dropdownUserEmail.textContent = user.email;
+                        updateWelcomeMessage(username);
+                    } else {
+                        accountSection.style.display = 'none';
+                        navSubmitItem.href = 'login.html';
+                        document.getElementById('dropdownSubmitItem').href = 'login.html';
+                        updateWelcomeMessage('');
+                    }
+                });
+            } else {
                 accountSection.style.display = 'block';
-                navSubmitItem.href = 'submit-item.html';
-                
-                const username = "Guest User";
-                dropdownUsername.textContent = username;
-                dropdownUserEmail.textContent = 'guest@example.com';
-                updateWelcomeMessage(username);
-                updateHeaderAvatars('');
-                
-                // Load items
-                fetchItems();
             }
-            
-            logoutButton.addEventListener('click', (e) => {
+
+            // --- Logout ---
+            logoutButton.addEventListener('click', async (e) => {
                 e.preventDefault();
                 accountDropdown.classList.remove('active');
-                window.location.href = 'login.html';
+
+                try {
+                    if (auth) {
+                        await signOut(auth); // Firebase sign out
+                    }
+                } catch (err) {
+                    console.error("Logout error:", err);
+                } finally {
+                    // Always redirect to login.html after logout
+                    window.location.href = 'login.html';
+                }
             });
+
+            // --- Fetch Profile ---
+            async function fetchProfile() {
+                try {
+                    const token = localStorage.getItem("authToken");
+                    if (!token) {
+                        console.log("No auth token found");
+                        return;
+                    }
+                    
+                    const res = await fetch("http://localhost:3000/api/profile", {
+                        method: "GET",
+                        headers: { 
+                            "Authorization": `Bearer ${token}`, 
+                            "Content-Type": "application/json" 
+                        }
+                    });
+                    
+                    const result = await res.json();
+                    if (result.success) {
+                        const user = result.user;
+                        const username = user.username || user.name || "No Name";
+                        dropdownUsername.textContent = username;
+                        dropdownUserEmail.textContent = user.email;
+                        
+                        // Update welcome message
+                        updateWelcomeMessage(username);
+                        
+                        // Update avatars if available
+                        if (user.avatar) {
+                            updateHeaderAvatars(user.avatar);
+                        } else {
+                            // Use default avatar
+                            updateHeaderAvatars('');
+                        }
+                    } else {
+                        console.error(result.message);
+                    }
+                } catch (err) { 
+                    console.error("Profile fetch failed:", err); 
+                }
+            }
             
-            // --- Item Data Management ---
-            function getItemIcon(category) {
-                const icons = {
-                    'Electronics': 'mobile-alt', 'ID Cards': 'id-card', 'Wallets': 'wallet',
-                    'Books': 'book', 'Clothing': 'tshirt', 'Keys': 'key'
-                };
-                return icons[category] || 'question-circle';
+            // Load profile on page load
+            fetchProfile();
+
+            // --- Fetch Items from Database ---
+            const itemListings = document.getElementById('itemListings');
+            const noItemsMessage = document.getElementById('noItemsMessage');
+            const loadingMessage = document.getElementById('loadingMessage');
+            let allItems = [];
+
+            // Function to get item icon based on category
+            function getItemIcon(category) { 
+                const icons = { 
+                    'Electronics':'mobile-alt',
+                    'ID Cards':'id-card',
+                    'Wallets':'wallet',
+                    'Books':'book',
+                    'Clothing':'tshirt',
+                    'Keys':'key' 
+                }; 
+                return icons[category] || 'question-circle'; 
             }
 
-            function displayItems(items) {
-                itemListings.innerHTML = '';
-                noItemsMessage.style.display = items.length === 0 ? 'block' : 'none';
-                
-                items.forEach(item => {
-                    const card = document.createElement('div');
-                    
-                    const itemType = item.type || '';
-                    const typeClass = itemType.toLowerCase() === 'lost' ? 'lost' : 'found';
-                    card.className = `item-card ${typeClass}`;
-
-                    const itemTitle = item.title || 'Untitled Item';
-                    const itemDescription = item.description || 'No description available.';
-                    const itemDate = item.date ? new Date(item.date).toLocaleDateString() : 'Unknown Date';
-                    const itemLocation = item.location || 'Unknown Location';
-                    const itemCategory = item.category || 'Other';
-
-                    const titleColor = typeClass === 'lost' ? '#dc3545' : '#28a745';
-                    
-                    card.innerHTML = `
-                        <div class="item-image">
-                            <i class="fas fa-${getItemIcon(itemCategory)} fa-3x"></i>
-                        </div>
-                        <div class="item-details">
-                            <span class="item-type ${typeClass}">${itemType}</span>
-                            <h3 style="color: ${titleColor};">${itemTitle}</h3>
-                            <p>${itemDescription}</p>
-                            <div class="item-meta">
-                                <span><i class="fas fa-calendar-alt"></i> ${itemDate}</span>
-                                <span><i class="fas fa-map-marker-alt"></i> ${itemLocation}</span>
-                            </div>
-                        </div>
-                    `;
-                    itemListings.appendChild(card);
+            // Function to format date
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
                 });
             }
 
-            function updateStatistics(items) {
-                document.getElementById('totalItemsCount').textContent = items.length;
-                const claimedCount = items.filter(item => item.status === 'claimed').length;
-                const resolvedCount = items.filter(item => item.status === 'resolved').length;
-                document.getElementById('claimedItemsCount').textContent = claimedCount;
-                document.getElementById('resolvedItemsCount').textContent = resolvedCount;
+            // Function to display items
+            function displayItems(items) { 
+                itemListings.innerHTML = ''; 
+                noItemsMessage.style.display = items.length === 0 ? 'block' : 'none'; 
+                
+                items.forEach((item, index) => { 
+                    const card = document.createElement('div'); 
+                    card.className = 'item-card'; 
+                    
+                    // Check if this item has an image for preview
+                    const hasImage = item.item_image;
+                    const imagePreviewHtml = hasImage ? 
+                        `<div class="item-image-preview" data-image-index="${index}">
+                            <small><i class="fas fa-image"></i> Click to view image</small>
+                        </div>` : '';
+                    
+                    card.innerHTML = `
+                        <div class="item-image">
+                            <i class="fas fa-${getItemIcon(item.category)} fa-3x"></i>
+                        </div>
+                        <div class="item-details">
+                            <span class="item-type ${item.item_type.toLowerCase()}">${item.item_type}</span>
+                            <h3>${item.item_name}</h3>
+                            <p>${item.description}</p>
+                            <div class="item-meta">
+                                <span><i class="fas fa-calendar-alt"></i> ${formatDate(item.date)}</span>
+                                <span><i class="fas fa-map-marker-alt"></i> ${item.location}</span>
+                            </div>
+                            ${imagePreviewHtml}
+                        </div>
+                    `; 
+                    
+                    // Add click event for image preview
+                    if (hasImage) {
+                        const previewElement = card.querySelector('.item-image-preview');
+                        previewElement.addEventListener('click', () => {
+                            openImagePreview(item.item_image);
+                        });
+                    }
+                    
+                    itemListings.appendChild(card); 
+                }); 
             }
 
-            function fetchItems() {
+            // Function to fetch items from database
+            async function fetchItemsFromDatabase() {
                 try {
                     loadingMessage.style.display = 'block';
-                    errorMessage.style.display = 'none';
-                    itemListings.innerHTML = `
-                        <div class="item-card skeleton"></div>
-                        <div class="item-card skeleton"></div>
-                        <div class="item-card skeleton"></div>
-                        <div class="item-card skeleton"></div>
-                    `;
-
-                    // Simulate API call delay
-                    setTimeout(() => {
-                        loadSampleData();
-                    }, 1500);
-
+                    noItemsMessage.style.display = 'none';
+                    
+                    const response = await fetch('http://localhost:3000/api/items');
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        allItems = result.items;
+                        displayItems(allItems);
+                        updateStatistics(allItems);
+                    } else {
+                        console.error('Failed to fetch items:', result.message);
+                        noItemsMessage.textContent = 'Failed to load items. Please try again later.';
+                        noItemsMessage.style.display = 'block';
+                    }
                 } catch (error) {
-                    console.error('Error setting up item listener:', error);
+                    console.error('Error fetching items:', error);
+                    noItemsMessage.textContent = 'Error loading items. Please check your connection.';
+                    noItemsMessage.style.display = 'block';
+                } finally {
                     loadingMessage.style.display = 'none';
-                    errorMessage.style.display = 'block';
-                    errorMessage.textContent = `Error loading items: ${error.message}. Please try again later.`;
-                    loadSampleData();
                 }
             }
 
-            function loadSampleData() {
-                const sampleItems = [
-                    { 
-                        id: 1, 
-                        type: 'Lost', 
-                        category: 'Electronics', 
-                        title: 'iPhone 13', 
-                        description: 'Lost near the main quad. Has a blue case.', 
-                        date: '2025-10-05', 
-                        location: 'Main Quad', 
-                        status: 'active' 
-                    },
-                    { 
-                        id: 2, 
-                        type: 'Found', 
-                        category: 'Wallets', 
-                        title: 'Brown Leather Wallet', 
-                        description: 'Found in the library, 2nd floor. Contains ID for John Doe.', 
-                        date: '2025-10-04', 
-                        location: 'Library', 
-                        status: 'claimed' 
-                    },
-                    { 
-                        id: 3, 
-                        type: 'Lost', 
-                        category: 'Keys', 
-                        title: 'Set of Keys with Car Remote', 
-                        description: 'Lost somewhere between the chemistry building and the parking garage.', 
-                        date: '2025-10-03', 
-                        location: 'Chemistry Building', 
-                        status: 'resolved' 
-                    },
-                    { 
-                        id: 4, 
-                        type: 'Found', 
-                        category: 'Books', 
-                        title: 'Introduction to Physics Textbook', 
-                        description: 'Left in lecture hall 101.', 
-                        date: '2025-10-02', 
-                        location: 'Lecture Hall 101', 
-                        status: 'active' 
-                    },
-                    { 
-                        id: 5, 
-                        type: 'Lost', 
-                        category: 'ID Cards', 
-                        title: 'Student ID Card', 
-                        description: 'Lost my student ID card near the cafeteria.', 
-                        date: '2025-10-01', 
-                        location: 'Cafeteria', 
-                        status: 'active' 
-                    },
-                    { 
-                        id: 6, 
-                        type: 'Found', 
-                        category: 'Clothing', 
-                        title: 'Blue Jacket', 
-                        description: 'Found a blue jacket in the student lounge.', 
-                        date: '2025-09-30', 
-                        location: 'Student Lounge', 
-                        status: 'active' 
-                    }
-                ];
+            // Function to update statistics
+            function updateStatistics(items) {
+                const totalItems = items.length;
+                const claimedItems = items.filter(item => item.status === 'found' || item.status === 'returned').length;
+                const resolvedItems = items.filter(item => item.status === 'returned' || item.status === 'closed').length;
                 
-                allItems = sampleItems;
-                displayItems(allItems);
-                updateStatistics(allItems);
-                loadingMessage.style.display = 'none';
+                document.getElementById('totalItemsCount').textContent = totalItems;
+                document.getElementById('claimedItemsCount').textContent = claimedItems;
+                document.getElementById('resolvedItemsCount').textContent = resolvedItems;
             }
 
+            // Function to filter items
             function filterItems() {
                 const searchTerm = document.getElementById('searchKeyword').value.toLowerCase();
                 const typeFilter = document.getElementById('itemTypeFilter').value;
                 const categoryFilter = document.getElementById('categoryFilter').value;
-
-                const filteredItems = allItems.filter(item =>
-                    ((item.title || '').toLowerCase().includes(searchTerm) || (item.description || '').toLowerCase().includes(searchTerm)) &&
-                    (typeFilter === '' || item.type === typeFilter) &&
+                
+                const filteredItems = allItems.filter(item => 
+                    (item.item_name.toLowerCase().includes(searchTerm) || 
+                     item.description.toLowerCase().includes(searchTerm)) &&
+                    (typeFilter === '' || item.item_type === typeFilter) &&
                     (categoryFilter === '' || item.category === categoryFilter)
                 );
+                
                 displayItems(filteredItems);
             }
-            
-            // --- Event Listeners for Filtering ---
-            document.getElementById('searchBtn').addEventListener('click', filterItems);
-            document.getElementById('searchKeyword').addEventListener('keyup', (e) => { 
-                if (e.key === 'Enter') filterItems(); 
-            });
-            document.getElementById('itemTypeFilter').addEventListener('change', filterItems);
-            document.getElementById('categoryFilter').addEventListener('change', filterItems);
-            
-            document.getElementById('resetFiltersBtn').addEventListener('click', () => {
-                document.getElementById('searchKeyword').value = '';
-                document.getElementById('itemTypeFilter').value = '';
-                document.getElementById('categoryFilter').value = '';
-                displayItems(allItems);
-            });
 
-            // --- Modal Logic ---
+            // Initialize the page
+            async function initializePage() {
+                await fetchItemsFromDatabase();
+                
+                // Set up event listeners
+                document.getElementById('searchBtn').addEventListener('click', filterItems);
+                document.getElementById('searchKeyword').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        filterItems();
+                    }
+                });
+                
+                document.getElementById('itemTypeFilter').addEventListener('change', filterItems);
+                document.getElementById('categoryFilter').addEventListener('change', filterItems);
+                
+                document.getElementById('resetFiltersBtn').addEventListener('click', () => { 
+                    document.getElementById('searchKeyword').value = ''; 
+                    document.getElementById('itemTypeFilter').value = ''; 
+                    document.getElementById('categoryFilter').value = ''; 
+                    displayItems(allItems); 
+                });
+            }
+
+            // Start the application
+            initializePage();
+
+            // --- Modals ---
             const modalBackdrop = document.getElementById('modalBackdrop');
             const privacyModal = document.getElementById('privacyModal');
             const serviceModal = document.getElementById('serviceModal');
@@ -1700,9 +1118,6 @@
             modalBackdrop.addEventListener('click', closeModal);
             document.querySelectorAll('.modal .close-btn').forEach(btn => btn.addEventListener('click', closeModal));
             window.addEventListener('keydown', event => { if (event.key === 'Escape') closeModal(); });
-
-            // --- Initial Page Load ---
-            initializeAuth(); // Start the application
         });
     </script>
 </body>

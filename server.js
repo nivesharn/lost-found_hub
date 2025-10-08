@@ -115,6 +115,7 @@ async function initializeDatabase() {
                 location VARCHAR(255),
                 avatar_url VARCHAR(500),
                 reset_token VARCHAR(255),
+                reset_token_expiry TIMESTAMP NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             )
@@ -136,6 +137,20 @@ async function initializeDatabase() {
                 user_id INT NULL,
                 status ENUM('active', 'found', 'returned', 'closed') DEFAULT 'active',
                 submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        // Create password_reset_tokens table for better token management
+        await connection.execute(`
+            CREATE TABLE IF NOT EXISTS password_reset_tokens (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                email VARCHAR(100) NOT NULL,
+                token VARCHAR(255) NOT NULL,
+                expires_at TIMESTAMP NOT NULL,
+                used BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_token (token),
+                INDEX idx_email (email)
             )
         `);
 
@@ -567,45 +582,159 @@ app.post('/api/forgot-password', async (req, res) => {
     const { email } = req.body;
     try {
         const [users] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
-        if (users.length === 0) return res.status(400).json({ success: false, message: 'Email not registered' });
+        if (users.length === 0) {
+            // Don't reveal that email doesn't exist for security
+            return res.json({ 
+                success: true, 
+                message: 'If the email exists, a reset link has been sent' 
+            });
+        }
 
-        const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: '15m' });
+        // Generate a secure random token
+        const crypto = require('crypto');
+        const token = crypto.randomBytes(32).toString('hex');
+        
+        // Set expiry time (15 minutes from now)
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
-        await pool.query('UPDATE users SET reset_token = ? WHERE email = ?', [token, email]);
+        // Store token in password_reset_tokens table
+        await pool.query(
+            'INSERT INTO password_reset_tokens (email, token, expires_at) VALUES (?, ?, ?)',
+            [email, token, expiresAt]
+        );
 
         const resetLink = `http://localhost:3000/reset-password.html?token=${token}&email=${encodeURIComponent(email)}`;
 
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: "Password Reset Link - Lost & Found Hub",
-            html: `<p>Click this link to reset your password (valid 15 min): <a href="${resetLink}">${resetLink}</a></p>`
-        });
+        // Send email
+        try {
+            await transporter.sendMail({
+                from: process.env.EMAIL_USER,
+                to: email,
+                subject: "Password Reset Link - Lost & Found Hub",
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #4CAF50;">Password Reset Request</h2>
+                        <p>Hello,</p>
+                        <p>You have requested to reset your password for your Lost & Found Hub account.</p>
+                        <p>Click the button below to reset your password (this link is valid for 15 minutes):</p>
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="${resetLink}" 
+                               style="background-color: #4CAF50; color: white; padding: 12px 24px; 
+                                      text-decoration: none; border-radius: 5px; display: inline-block;">
+                                Reset Password
+                            </a>
+                        </div>
+                        <p>If the button doesn't work, copy and paste this link in your browser:</p>
+                        <p style="word-break: break-all;">${resetLink}</p>
+                        <p>If you didn't request this reset, please ignore this email.</p>
+                        <br>
+                        <p>Best regards,<br>Lost & Found Hub Team</p>
+                    </div>
+                `
+            });
+        } catch (emailError) {
+            console.error('Email sending error:', emailError);
+            // Don't fail the request if email fails
+        }
 
-        res.json({ success: true, message: 'Reset link sent to email' });
+        res.json({ 
+            success: true, 
+            message: 'If the email exists, a reset link has been sent' 
+        });
     } catch (error) {
         console.error('Forgot password error:', error);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
     }
 });
 
 // ===================== RESET PASSWORD =====================
-app.post('/api/reset-password', async (req, res) => {
-    const { token, newPassword } = req.body;
+app.post('/api/auth/reset-password', async (req, res) => {
     try {
-        const decoded = jwt.verify(token, JWT_SECRET);
+        const { email, newPassword, token } = req.body;
+        
+        console.log('Reset password request received:', { 
+            email: email ? 'present' : 'missing', 
+            token: token ? 'present' : 'missing',
+            passwordLength: newPassword ? newPassword.length : 0
+        });
 
-        const [users] = await pool.query('SELECT * FROM users WHERE email = ? AND reset_token = ?', [decoded.email, token]);
-        if (users.length === 0) return res.status(400).json({ success: false, message: 'Invalid or expired token' });
+        // Validate required fields
+        if (!email || !newPassword || !token) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Email, new password, and token are required' 
+            });
+        }
 
+        // Check password strength
+        if (newPassword.length < 8) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Password must be at least 8 characters long' 
+            });
+        }
+
+        // Check if token exists and is valid
+        const [tokens] = await pool.query(
+            'SELECT * FROM password_reset_tokens WHERE email = ? AND token = ? AND used = FALSE AND expires_at > NOW()',
+            [email, token]
+        );
+
+        console.log('Token validation result:', tokens.length > 0 ? 'valid' : 'invalid');
+
+        if (tokens.length === 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Invalid or expired reset token' 
+            });
+        }
+
+        // Check if user exists
+        const [users] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+        if (users.length === 0) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'User not found' 
+            });
+        }
+
+        // Hash the new password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-        await pool.query('UPDATE users SET password = ?, reset_token = NULL WHERE email = ?', [hashedPassword, decoded.email]);
+        // Update user's password
+        const [result] = await pool.query(
+            'UPDATE users SET password = ? WHERE email = ?',
+            [hashedPassword, email]
+        );
 
-        res.json({ success: true, message: 'Password updated successfully. Use new password to login.' });
+        if (result.affectedRows === 0) {
+            return res.status(500).json({ 
+                success: false, 
+                message: 'Failed to update password' 
+            });
+        }
+
+        // Mark token as used
+        await pool.query(
+            'UPDATE password_reset_tokens SET used = TRUE WHERE email = ? AND token = ?',
+            [email, token]
+        );
+
+        console.log('Password reset successfully for email:', email);
+
+        res.json({ 
+            success: true, 
+            message: 'Password updated successfully. You can now log in with your new password.' 
+        });
     } catch (error) {
         console.error('Reset password error:', error);
-        res.status(400).json({ success: false, message: 'Invalid or expired token' });
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
     }
 });
 

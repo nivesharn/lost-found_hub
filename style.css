@@ -346,6 +346,7 @@
 
         /* Item Listings */
         .item-grid {
+            
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
@@ -353,6 +354,7 @@
         }
 
         .item-card {
+            
             background-color: var(--card-bg);
             border-radius: 12px;
             box-shadow: var(--shadow-light);
@@ -369,6 +371,7 @@
         }
         
         .item-image {
+            
             height: 180px;
             background-color: var(--bg-color-light);
             display: flex;
@@ -378,6 +381,7 @@
         }
 
         .item-details {
+            border-left: 5px solid #4CAF50;
             padding: 20px;
         }
 
@@ -911,7 +915,7 @@
 
        /* Footer */
         footer {
-            background:#343a40;
+            background:#23282c;
             color: white;
             padding: 60px 0 30px;
         }
