@@ -412,8 +412,6 @@
             transition: color 0.3s;
         }
 
-        
-
         .footer-links a:hover {
             color: #4CAF50;
         }
@@ -626,19 +624,16 @@
         </section>
     </main>
 
-    
-
     <div class="success-modal-backdrop" id="successModal">
         <div class="success-modal">
             <div class="success-icon">
                 <i class="fas fa-check"></i>
             </div>
             <h2>Submitted Successfully!</h2>
-            <p>Your submitted item is updated to admin and has been notified.</p>
+            <p>Our coordinator will contact you ASAP. </p>
             <button class="success-button" id="successButton">OK</button>
         </div>
     </div>
-
 
     <footer>
         <div class="container">
@@ -847,64 +842,62 @@
     </div>
 
     <script>
-
-        // Modal functionality for footer links
-            const modalBackdrop = document.getElementById('modalBackdrop');
-            const privacyModal = document.getElementById('privacyModal');
-            const serviceModal = document.getElementById('serviceModal');
-            const termsModal = document.getElementById('termsModal');
-            const privacyLink = document.getElementById('privacyLink');
-            const serviceLink = document.getElementById('serviceLink');
-            const termsLink = document.getElementById('termsLink');
-
-            // Open modal functions
-            function openModal(modal) {
-                modalBackdrop.style.display = 'block';
-                modal.style.display = 'block';
-                document.body.classList.add('modal-open');
-            }
-
-            function closeModals() {
-                modalBackdrop.style.display = 'none';
-                privacyModal.style.display = 'none';
-                serviceModal.style.display = 'none';
-                termsModal.style.display = 'none';
-                document.body.classList.remove('modal-open');
-            }
-
-            // Event listeners for footer links
-            privacyLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                openModal(privacyModal);
-            });
-
-            serviceLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                openModal(serviceModal);
-            });
-
-            termsLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                openModal(termsModal);
-            });
-
-            // Close modals
-            modalBackdrop.addEventListener('click', closeModals);
-            
-            document.querySelectorAll('.close-btn').forEach(btn => {
-                btn.addEventListener('click', closeModals);
-            });
-
-            // Close with Escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeModals();
-                }
-            });
-
-
         // Initialize EmailJS
         emailjs.init("ieCJeX-5LsiuaA20c");
+
+        // Modal functionality for footer links
+        const modalBackdrop = document.getElementById('modalBackdrop');
+        const privacyModal = document.getElementById('privacyModal');
+        const serviceModal = document.getElementById('serviceModal');
+        const termsModal = document.getElementById('termsModal');
+        const privacyLink = document.getElementById('privacyLink');
+        const serviceLink = document.getElementById('serviceLink');
+        const termsLink = document.getElementById('termsLink');
+
+        // Open modal functions
+        function openModal(modal) {
+            modalBackdrop.style.display = 'block';
+            modal.style.display = 'block';
+            document.body.classList.add('modal-open');
+        }
+
+        function closeModals() {
+            modalBackdrop.style.display = 'none';
+            privacyModal.style.display = 'none';
+            serviceModal.style.display = 'none';
+            termsModal.style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
+
+        // Event listeners for footer links
+        privacyLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal(privacyModal);
+        });
+
+        serviceLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal(serviceModal);
+        });
+
+        termsLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal(termsModal);
+        });
+
+        // Close modals
+        modalBackdrop.addEventListener('click', closeModals);
+        
+        document.querySelectorAll('.close-btn').forEach(btn => {
+            btn.addEventListener('click', closeModals);
+        });
+
+        // Close with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModals();
+            }
+        });
 
         // Function to update avatars in header
         function updateHeaderAvatars(avatarUrl) {
@@ -946,40 +939,38 @@
             }
         }
 
-        // Function to fetch user profile
-        async function fetchProfile() {
+        // Function to fetch user profile from database
+        async function fetchUserProfile() {
             try {
-                const token = localStorage.getItem("authToken");
+                const token = localStorage.getItem('authToken');
                 if (!token) {
-                    console.log("No auth token found");
-                    return;
+                    console.log('No authentication token found');
+                    return null;
                 }
-                
-                const res = await fetch("http://localhost:3000/api/profile", {
-                    method: "GET",
-                    headers: { 
-                        "Authorization": `Bearer ${token}`, 
-                        "Content-Type": "application/json" 
+
+                // Fetch user profile from your backend API
+                const response = await fetch('http://localhost:3000/api/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
-                
-                const result = await res.json();
-                if (result.success) {
-                    const user = result.user;
-                    updateUserInfo(user.username || user.name, user.email);
-                    
-                    // Update avatars if available
-                    if (user.avatar) {
-                        updateHeaderAvatars(user.avatar);
-                    } else {
-                        // Use default avatar
-                        updateHeaderAvatars('https://i.pravatar.cc/150?img=12');
-                    }
-                } else {
-                    console.error(result.message);
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user profile');
                 }
-            } catch (err) { 
-                console.error("Profile fetch failed:", err); 
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    return result.user;
+                } else {
+                    throw new Error(result.message || 'Failed to fetch user profile');
+                }
+            } catch (error) {
+                console.error('Error fetching user profile:', error);
+                return null;
             }
         }
 
@@ -1050,51 +1041,7 @@
             document.getElementById('loadingSpinner').style.display = 'block';
 
             try {
-                // Get form data
-                const formData = new FormData();
-                formData.append('itemType', document.querySelector('input[name="itemType"]:checked').value);
-                formData.append('itemName', document.getElementById('itemName').value.trim());
-                formData.append('category', document.getElementById('category').value);
-                formData.append('description', document.getElementById('description').value.trim());
-                formData.append('location', document.getElementById('location').value.trim());
-                formData.append('date', document.getElementById('date').value);
-                formData.append('contactEmail', document.getElementById('contactEmail').value.trim());
-                formData.append('contactPhone', document.getElementById('contactPhone').value.trim());
-                
-                // Append image file if selected
-                const imageFile = document.getElementById('itemImage').files[0];
-                if (imageFile) {
-                    formData.append('itemImage', imageFile);
-                }
-
-                console.log('Submitting to database with form data...');
-
-                // Get auth token
-                const token = localStorage.getItem('authToken');
-                if (!token) {
-                    throw new Error('Please login to submit an item');
-                }
-
-                // Save to database with image
-                const dbResponse = await fetch('http://localhost:3000/api/items', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                        // Don't set Content-Type for FormData, let browser set it with boundary
-                    },
-                    body: formData
-                });
-
-                const dbResult = await dbResponse.json();
-                
-                if (!dbResult.success) {
-                    throw new Error('Database error: ' + dbResult.message);
-                }
-
-                console.log('Database save successful:', dbResult);
-
-                // Send email notification
-                console.log('Sending email notification...');
+                // Get form data for email
                 const emailData = {
                     itemType: document.querySelector('input[name="itemType"]:checked').value,
                     itemName: document.getElementById('itemName').value.trim(),
@@ -1105,10 +1052,21 @@
                     contactEmail: document.getElementById('contactEmail').value.trim(),
                     contactPhone: document.getElementById('contactPhone').value.trim(),
                     timestamp: new Date().toLocaleString(),
-                    hasImage: !!imageFile
+                    hasImage: !!document.getElementById('itemImage').files[0],
+                    // Add sender information for email template
+                    from_name: "Lost & Found Portal User",
+                    from_email: document.getElementById('contactEmail').value.trim(),
+                    to_email: "lostinfoundhub1@gmail.com"
                 };
 
-                const emailResult = await emailjs.send('service_csp5v7g', 'template_ye5sd7p', emailData);
+                console.log('Sending email notification...');
+                
+                // Send email notification only
+                const emailResult = await emailjs.send(
+                    'service_csp5v7g', 
+                    'template_ye5sd7p', 
+                    emailData
+                );
                 console.log('Email sent successfully:', emailResult);
 
                 // Hide loading spinner
@@ -1221,14 +1179,43 @@
         document.getElementById('date').valueAsDate = new Date();
 
         // Load user profile and check authentication on page load
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             const token = localStorage.getItem('authToken');
             if (!token) {
                 alert('Please login to submit an item');
                 window.location.href = 'login.html';
-            } else {
-                // Load user profile if logged in
-                fetchProfile();
+                return;
+            }
+
+            try {
+                // Fetch user profile from database
+                const userProfile = await fetchUserProfile();
+                
+                if (userProfile) {
+                    // Update user info with data from database
+                    updateUserInfo(
+                        userProfile.username || userProfile.name || 'User',
+                        userProfile.email || 'user@example.com'
+                    );
+                    
+                    // Update avatar with user's original image from database
+                    if (userProfile.avatar) {
+                        updateHeaderAvatars(userProfile.avatar);
+                    } else {
+                        // Use default avatar if no image in database
+                        updateHeaderAvatars('https://i.pravatar.cc/150?img=12');
+                    }
+                } else {
+                    // Fallback to demo data if fetch fails
+                    console.log('Using demo data as fallback');
+                    updateUserInfo('nivesharm', 'nivesharm@example.com');
+                    updateHeaderAvatars('https://i.pravatar.cc/150?img=12');
+                }
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+                // Fallback to demo data
+                updateUserInfo('nivesharm', 'nivesharm@example.com');
+                updateHeaderAvatars('https://i.pravatar.cc/150?img=12');
             }
         });
     </script>
