@@ -546,7 +546,7 @@
                         <option value="Bags">Bags/Backpacks</option>
                         <option value="Writing Instruments">Writing Instruments (Pens, Pencils)</option>
                         <option value="Sports Equipment">Sports Equipment</option>
-                        <option value="Other">Other - Please mention in description</option>
+                        <span style="color: red;"><option value="Other">Other - Please mention in description</option></span>
                     </select>
                     <span class="error-message" id="category-error">Category is required.</span>
                 </div>
@@ -630,7 +630,7 @@
                 <i class="fas fa-check"></i>
             </div>
             <h2>Submitted Successfully!</h2>
-            <p>Our coordinator will contact you ASAP. </p>
+            <p>Our coordinator will contact you ASAP.</p>
             <button class="success-button" id="successButton">OK</button>
         </div>
     </div>
@@ -1056,7 +1056,7 @@
                     // Add sender information for email template
                     from_name: "Lost & Found Portal User",
                     from_email: document.getElementById('contactEmail').value.trim(),
-                    to_email: "lostinfoundhub1@gmail.com"
+                    to_email: "lostnfoundhub1@gmail.com"
                 };
 
                 console.log('Sending email notification...');
@@ -1203,19 +1203,19 @@
                         updateHeaderAvatars(userProfile.avatar);
                     } else {
                         // Use default avatar if no image in database
-                        updateHeaderAvatars('https://i.pravatar.cc/150?img=12');
+                        // updateHeaderAvatars('https://i.pravatar.cc/150?img=12');
                     }
                 } else {
                     // Fallback to demo data if fetch fails
                     console.log('Using demo data as fallback');
                     updateUserInfo('nivesharm', 'nivesharm@example.com');
-                    updateHeaderAvatars('https://i.pravatar.cc/150?img=12');
+                    // updateHeaderAvatars('https://i.pravatar.cc/150?img=12');
                 }
             } catch (error) {
                 console.error('Error loading user profile:', error);
                 // Fallback to demo data
                 updateUserInfo('nivesharm', 'nivesharm@example.com');
-                updateHeaderAvatars('https://i.pravatar.cc/150?img=12');
+                // updateHeaderAvatars('https://i.pravatar.cc/150?img=12');
             }
         });
     </script>
