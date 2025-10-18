@@ -10,6 +10,7 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 require('dotenv').config();
 
 // ===================== APP SETUP =====================
@@ -176,18 +177,22 @@ async function initializeDatabase() {
 initializeDatabase();
 
 // ===================== JWT & GOOGLE CLIENT =====================
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key_here';
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key_here_change_in_production';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
-const generateToken = (userId) => jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: '1h' });
+// Fixed generateToken function to handle both string and numeric user IDs
+const generateToken = (userId) => {
+    const payload = typeof userId === 'number' ? { id: userId } : { id: userId.toString() };
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+};
 
 // ===================== MAILER =====================
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        user: process.env.EMAIL_USER || 'lostnfoundhub1@gmail.com',
+        pass: process.env.EMAIL_PASS || 'your_app_password_here'
     }
 });
 
@@ -197,15 +202,17 @@ function authenticateToken(req, res, next) {
     const token = authHeader && authHeader.split(' ')[1];
     if (!token) return res.status(401).json({ success: false, message: 'No token provided' });
 
-    jwt.verify(token, JWT_SECRET, (err, user) => {
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
         if (err) return res.status(403).json({ success: false, message: 'Invalid token' });
-        req.user = user;
+        req.user = decoded;
         next();
     });
 }
 
-// ===================== SIGNUP =====================
-app.post('/api/signup', async (req, res) => {
+// ===================== AUTH ROUTES =====================
+
+// SIGNUP
+app.post('/api/auth/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
         
@@ -217,12 +224,45 @@ app.post('/api/signup', async (req, res) => {
             });
         }
 
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid email format'
+            });
+        }
+
+        // Validate password strength
+        if (password.length < 8) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password must be at least 8 characters long'
+            });
+        }
+
+        // Check if user already exists
         const [existingUser] = await pool.query(
             'SELECT * FROM users WHERE email = ? OR username = ?',
             [email, username]
         );
-        if (existingUser.length > 0) return res.status(400).json({ success: false, message: 'User with this email or username already exists' });
+        
+        if (existingUser.length > 0) {
+            const existing = existingUser[0];
+            if (existing.email === email) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'User with this email already exists' 
+                });
+            } else {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Username already taken' 
+                });
+            }
+        }
 
+        // Hash password and create user
         const passwordHash = await bcrypt.hash(password, 10);
         const [result] = await pool.query(
             'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
@@ -231,20 +271,64 @@ app.post('/api/signup', async (req, res) => {
 
         const token = generateToken(result.insertId);
 
+        // Send welcome email
+        try {
+            await transporter.sendMail({
+                from: process.env.EMAIL_USER || 'lostnfoundhub1@gmail.com',
+                to: email,
+                subject: "Welcome to Lost & Found Hub!",
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #4CAF50;">Welcome to Lost & Found Hub!</h2>
+                        <p>Hello ${username},</p>
+                        <p>Thank you for creating an account with Lost & Found Hub. We're excited to have you on board!</p>
+                        <p>You can now start using our platform to:</p>
+                        <ul>
+                            <li>Report lost items</li>
+                            <li>Post found items</li>
+                            <li>Connect with people in your community</li>
+                            <li>Help reunite lost belongings with their owners</li>
+                        </ul>
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="http://localhost:3000" 
+                               style="background-color: #4CAF50; color: white; padding: 12px 24px; 
+                                      text-decoration: none; border-radius: 5px; display: inline-block;">
+                                Get Started
+                            </a>
+                        </div>
+                        <p>If you have any questions, feel free to contact our support team.</p>
+                        <br>
+                        <p>Best regards,<br>Lost & Found Hub Team</p>
+                    </div>
+                `
+            });
+        } catch (emailError) {
+            console.error('Welcome email sending error:', emailError);
+            // Don't fail the registration if email fails
+        }
+
         res.json({
             success: true,
             message: 'User created successfully',
             token,
-            user: { user_id: result.insertId, username, email, role: 'user' }
+            user: { 
+                user_id: result.insertId, 
+                username, 
+                email, 
+                role: 'user' 
+            }
         });
     } catch (error) {
         console.error('Signup error:', error);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
     }
 });
 
-// ===================== LOGIN =====================
-app.post('/api/login', async (req, res) => {
+// LOGIN
+app.post('/api/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -264,16 +348,32 @@ app.post('/api/login', async (req, res) => {
                 role: "admin",
                 token,
                 message: "Admin login successful",
-                user: { user_id: "admin", username: "Administrator", email, role: "admin" }
+                user: { 
+                    user_id: "admin", 
+                    username: "Administrator", 
+                    email, 
+                    role: "admin" 
+                }
             });
         }
 
+        // Regular user login
         const [users] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
-        if (users.length === 0) return res.status(404).json({ success: false, message: 'User not found' });
+        if (users.length === 0) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'User not found' 
+            });
+        }
 
         const user = users[0];
         const match = await bcrypt.compare(password, user.password);
-        if (!match) return res.status(401).json({ success: false, message: 'Invalid email or password' });
+        if (!match) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Invalid email or password' 
+            });
+        }
 
         const token = generateToken(user.user_id);
 
@@ -282,17 +382,128 @@ app.post('/api/login', async (req, res) => {
             role: user.role,
             token,
             message: "User login successful",
-            user: { user_id: user.user_id, username: user.username, email: user.email, role: user.role }
+            user: { 
+                user_id: user.user_id, 
+                username: user.username, 
+                email: user.email, 
+                role: user.role 
+            }
         });
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
+    }
+});
+
+// GOOGLE AUTH
+app.post('/api/auth/google', async (req, res) => {
+    try {
+        const { id_token } = req.body;
+        
+        if (!id_token) {
+            return res.status(400).json({
+                success: false,
+                message: 'Google token is required'
+            });
+        }
+
+        // Verify Google token
+        const ticket = await googleClient.verifyIdToken({
+            idToken: id_token,
+            audience: GOOGLE_CLIENT_ID
+        });
+
+        const payload = ticket.getPayload();
+        const { sub: googleId, email, name, picture } = payload;
+
+        // Check if user exists
+        const [existingUsers] = await pool.query(
+            'SELECT * FROM users WHERE email = ?',
+            [email]
+        );
+
+        let user;
+        if (existingUsers.length > 0) {
+            // User exists, update last login
+            user = existingUsers[0];
+            await pool.query(
+                'UPDATE users SET updated_at = CURRENT_TIMESTAMP WHERE user_id = ?',
+                [user.user_id]
+            );
+        } else {
+            // Create new user with Google data
+            const username = email.split('@')[0] + '_google';
+            const [result] = await pool.query(
+                'INSERT INTO users (username, email, password, full_name, avatar_url, role) VALUES (?, ?, ?, ?, ?, ?)',
+                [username, email, 'google_auth', name, picture, 'user']
+            );
+            
+            user = {
+                user_id: result.insertId,
+                username,
+                email,
+                full_name: name,
+                avatar_url: picture,
+                role: 'user'
+            };
+
+            // Send welcome email for Google signup
+            try {
+                await transporter.sendMail({
+                    from: process.env.EMAIL_USER || 'lostnfoundhub1@gmail.com',
+                    to: email,
+                    subject: "Welcome to Lost & Found Hub!",
+                    html: `
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                            <h2 style="color: #4CAF50;">Welcome to Lost & Found Hub!</h2>
+                            <p>Hello ${name},</p>
+                            <p>Thank you for signing up with Google! We're excited to have you on board.</p>
+                            <p>You can now start using our platform to report lost and found items.</p>
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="http://localhost:3000" 
+                                   style="background-color: #4CAF50; color: white; padding: 12px 24px; 
+                                          text-decoration: none; border-radius: 5px; display: inline-block;">
+                                    Get Started
+                                </a>
+                            </div>
+                            <p>Best regards,<br>Lost & Found Hub Team</p>
+                        </div>
+                    `
+                });
+            } catch (emailError) {
+                console.error('Welcome email sending error:', emailError);
+            }
+        }
+
+        const token = generateToken(user.user_id);
+
+        res.json({
+            success: true,
+            token,
+            user: {
+                user_id: user.user_id,
+                username: user.username,
+                email: user.email,
+                name: user.full_name,
+                photo: user.avatar_url,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        console.error('Google auth error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Google authentication failed'
+        });
     }
 });
 
 // ===================== ITEMS ROUTES =====================
 
-// Save item to database with image upload - UPDATED TO USE item_image COLUMN
+// Save item to database with image upload - FIXED ENDPOINT
 app.post('/api/items', authenticateToken, uploadItemImage.single('itemImage'), async (req, res) => {
     try {
         console.log('Received item submission:', req.body);
@@ -331,7 +542,7 @@ app.post('/api/items', authenticateToken, uploadItemImage.single('itemImage'), a
 
         console.log('Inserting into database with user ID:', userId, 'and image URL:', itemImage);
 
-        // Insert item into database - UPDATED TO USE item_image COLUMN
+        // Insert item into database
         const query = `
             INSERT INTO items (item_type, item_name, category, description, location, date, contact_email, contact_phone, item_image, user_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -367,7 +578,7 @@ app.post('/api/items', authenticateToken, uploadItemImage.single('itemImage'), a
     }
 });
 
-// Get all items with image URLs - UPDATED TO USE item_image COLUMN
+// Get all items with image URLs
 app.get('/api/items', async (req, res) => {
     try {
         const query = `
@@ -398,7 +609,7 @@ app.get('/api/items', async (req, res) => {
     }
 });
 
-// Get single item by ID - UPDATED TO USE item_image COLUMN
+// Get single item by ID
 app.get('/api/items/:id', async (req, res) => {
     try {
         const itemId = req.params.id;
@@ -438,7 +649,7 @@ app.get('/api/items/:id', async (req, res) => {
     }
 });
 
-// Get user's items - UPDATED TO USE item_image COLUMN
+// Get user's items
 app.get('/api/my-items', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
@@ -527,7 +738,7 @@ app.put('/api/items/:id/status', authenticateToken, async (req, res) => {
     }
 });
 
-// Delete item - UPDATED TO USE item_image COLUMN
+// Delete item
 app.delete('/api/items/:id', authenticateToken, async (req, res) => {
     try {
         const itemId = req.params.id;
@@ -577,8 +788,10 @@ app.delete('/api/items/:id', authenticateToken, async (req, res) => {
     }
 });
 
-// ===================== FORGOT PASSWORD =====================
-app.post('/api/forgot-password', async (req, res) => {
+// ===================== PASSWORD RESET ROUTES =====================
+
+// Forgot password
+app.post('/api/auth/forgot-password', async (req, res) => {
     const { email } = req.body;
     try {
         const [users] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
@@ -591,7 +804,6 @@ app.post('/api/forgot-password', async (req, res) => {
         }
 
         // Generate a secure random token
-        const crypto = require('crypto');
         const token = crypto.randomBytes(32).toString('hex');
         
         // Set expiry time (15 minutes from now)
@@ -608,7 +820,7 @@ app.post('/api/forgot-password', async (req, res) => {
         // Send email
         try {
             await transporter.sendMail({
-                from: process.env.EMAIL_USER,
+                from: process.env.EMAIL_USER || 'lostnfoundhub1@gmail.com',
                 to: email,
                 subject: "Password Reset Link - Lost & Found Hub",
                 html: `
@@ -650,7 +862,7 @@ app.post('/api/forgot-password', async (req, res) => {
     }
 });
 
-// ===================== RESET PASSWORD =====================
+// Reset password
 app.post('/api/auth/reset-password', async (req, res) => {
     try {
         const { email, newPassword, token } = req.body;
@@ -972,6 +1184,23 @@ app.get('/api/health', async (req, res) => {
             error: error.message 
         });
     }
+});
+
+// ===================== ERROR HANDLING MIDDLEWARE =====================
+app.use((error, req, res, next) => {
+    if (error instanceof multer.MulterError) {
+        if (error.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({
+                success: false,
+                message: 'File too large'
+            });
+        }
+    }
+    console.error('Unhandled error:', error);
+    res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+    });
 });
 
 // ===================== START SERVER =====================

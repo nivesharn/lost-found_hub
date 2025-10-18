@@ -8,6 +8,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <meta name="google-signin-client_id" content="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Add EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        /* Add styles for email status messages */
+        .email-status {
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+            padding: 8px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .email-sending {
+            background-color: #e3f2fd;
+            color: #1976d2;
+            border: 1px solid #bbdefb;
+        }
+        
+        .email-success {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        
+        .email-error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+    </style>
 </head>
 <body>
     <div class="container" id="container">
@@ -43,16 +74,28 @@
                     </label>
                 </div>
                 <button type="submit" id="signupButton" disabled>Sign Up</button>
+                
+                <!-- Email Status Messages -->
+                <!-- <div class="email-status email-sending" id="emailSendingMessage">
+                    <i class="fas fa-spinner fa-spin"></i> Sending welcome email...
+                </div>
+                <div class="email-status email-success" id="emailSuccessMessage">
+                    <i class="fas fa-check-circle"></i> Welcome email sent successfully!
+                </div> -->
+                <!-- <div class="email-status email-error" id="emailErrorMessage">
+                    <i class="fas fa-exclamation-triangle"></i> Account created, but welcome email failed. Check your email settings.
+                </div> -->
+                
                 <div class="divider"><span class="divider-text">OR</span></div>
                 <div id="g_id_signup"></div>
             </form>
         </div>
 
+        <!-- Rest of your HTML remains the same -->
         <!-- Sign In Form -->
         <div class="form-container sign-in-container">
             <form action="#" id="signinForm">
-
-                <h1 >Sign in</h1>
+                <h1>Sign in</h1>
                 <br>
                 <br>
                 <div class="input-group">
@@ -76,10 +119,9 @@
             </form>
         </div>
 
-        <!-- Overlay -->
+        <!-- Overlay and modals remain the same -->
         <div class="overlay-container">
             <div class="overlay">
-                
                 <div class="overlay-panel overlay-left">
                     <div class="logo">
                         <img src="lost_logo.png" alt="Lost & Found Hub Logo" class="form-image" />
@@ -277,7 +319,8 @@
             </div>
         </div>
     </div>
-    <script src="login.js"></script>  
 
+    <script src="login.js"></script>
+    
 </body>
 </html>
